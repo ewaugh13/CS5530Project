@@ -63,9 +63,9 @@ public class testdriver2 {
 					System.out.println("please enter your full name:");
 					while ((fullName = in.readLine()) == null && fullName.length() == 0)
 						;
-					System.out.println("please enter your age:");
+					System.out.println("please enter your age(have to be 18 or older to use Uotel):");
 					while ((age = in.readLine()) == null && age.length() == 0)
-						;
+						;					
 					System.out.println("please enter your email:");
 					while ((email = in.readLine()) == null && email.length() == 0)
 						;
@@ -82,7 +82,7 @@ public class testdriver2 {
 
 					User users = new User();
 					String input = login + "," + password + "," + fullName + "," + age + "," + email + "," + phoneNumber + "," + address + "," + userType;
-					users.insertUser(input, con.stmt);
+					users.insertUser(input, con.con);
 				} else if (c == 2) {
 					System.out.println("please enter your query below:");
 					while ((sql = in.readLine()) == null && sql.length() == 0)
