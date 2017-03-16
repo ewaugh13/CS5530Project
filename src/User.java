@@ -3,6 +3,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class User {
 	public User() {}
@@ -13,19 +15,27 @@ public class User {
 		return output;
 	}
 
-	public void insertUser(String input, Connection conn) throws SQLException, IOException
+	public boolean insertUser(String input, Connection conn) throws SQLException, IOException
 	{
-		String[] splited = input.split(",");
+		String[] splitted = input.split(",");
+		//Pattern re = Pattern.compile("\\s*"); //regex for whitespace
+		for(int i = 0; i < splitted.length; i++)
+		{
+			if(Pattern.matches("\\s*", splitted[i]))
+			{
+				splitted[i] = null;
+			}
+		}
 
 		String query = " insert into Users (login, password, fullName, age, email, phoneNumber, address, userType)"
 				+ " values (?, ?, ?, ?, ?, ?, ?, ?)";
 
 		// create the mysql insert preparedstatement
 		PreparedStatement preparedStmt = conn.prepareStatement(query);
-		setValues(preparedStmt, splited); //sets the values and calls execute
+		return setValues(preparedStmt, splitted); //sets the values and calls execute
 	}
 	
-	private static void displayUserOptions(PreparedStatement preparedStmt, String[] splited) throws SQLException, IOException 
+	private static boolean displayUserOptions(PreparedStatement preparedStmt, String[] splited) throws SQLException, IOException 
 	{
 		System.out.println("1. Try another login name:");
 		System.out.println("2. Return to welcome screen:");
@@ -58,32 +68,32 @@ public class User {
 				while ((login = in.readLine()) == null)
 					;
 				splited[0] = login;
-				updateValues(preparedStmt, splited);
-				break;
+				return updateValues(preparedStmt, splited);
 			}
 			else
 			{
-				break;
+				return false;
 			}
 		}	
 	}
 	
-	private static void exectueStmt(PreparedStatement preparedStmt, String[] splited) throws SQLException, IOException
+	private static boolean exectueStmt(PreparedStatement preparedStmt, String[] splited) throws SQLException, IOException
 	{
 		try 
 		{
 			preparedStmt.execute();
 			System.out.println("User created with login of " + splited[0] + " and password of " + splited[1] + "\n");
+			return true;
 		} 
 		catch (SQLException e) 
 		{
 			System.err.println(e.getMessage());
 			System.out.println("cannot create the user try again with a different login name or make sure that the other information fits the specification \n");
-			displayUserOptions(preparedStmt, splited);
+			return displayUserOptions(preparedStmt, splited);
 		}
 	}
 	
-	private static void setValues(PreparedStatement preparedStmt, String[] splited) throws SQLException, IOException
+	private static boolean setValues(PreparedStatement preparedStmt, String[] splited) throws SQLException, IOException
 	{
 		boolean isUser;
 		if (splited[7] == "yes") 
@@ -109,26 +119,26 @@ public class User {
 			preparedStmt.setString(7, splited[6]);
 			preparedStmt.setBoolean(8, isUser);
 			
-			exectueStmt(preparedStmt, splited);
+			return exectueStmt(preparedStmt, splited);
 		}
 		catch (Exception e)
 		{
 			System.out.println("an inputed value did not match specifications of what is needed. Either try a new login name or if you aren't 18 or older please have an adult help you.");
-			displayUserOptions(preparedStmt, splited);
+			return displayUserOptions(preparedStmt, splited);
 		}
 	}
 	
-	private static void updateValues(PreparedStatement preparedStmt, String[] splited) throws SQLException, IOException
+	private static boolean updateValues(PreparedStatement preparedStmt, String[] splited) throws SQLException, IOException
 	{
 		try
 		{
 			preparedStmt.setString(1, splited[0]);	
-			exectueStmt(preparedStmt, splited);
+			return exectueStmt(preparedStmt, splited);
 		}
 		catch (Exception e)
 		{
 			System.out.println("a inputed value did not match specifications of what is needed try again");
-			displayUserOptions(preparedStmt, splited);
+			return displayUserOptions(preparedStmt, splited);
 		}
 	}
 	
@@ -136,7 +146,6 @@ public class User {
 	{
 		String[] splited = input.split(",");
 		String sql = "Select * From Users u Where u.login = '" + splited[0] + "' AND u.password = '" + splited[1] + "'";
-		System.out.println("executing " + sql);
 		ResultSet rs = null;
 		 	try
 		 	{

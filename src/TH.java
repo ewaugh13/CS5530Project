@@ -62,7 +62,6 @@ public class TH
 		catch(Exception e)
 		{
 			System.out.println("an inputed value did not match specifications of what is needed try again");
-
 		}
 		
 	}
@@ -71,13 +70,12 @@ public class TH
 	{
 		try
 		{
-		preparedStmt.execute();
-		System.out.println("TH created with THID " + splited[0]);
+			preparedStmt.execute();
+			System.out.println("TH created with THID " + splited[0]);
 		}
 		catch (SQLException e)
 		{
 			System.out.println("Can not create the TH. Make sure all of your values are correct.");
-			
 		}
 	}
 	

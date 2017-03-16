@@ -39,7 +39,10 @@ public class testdriver2 {
 			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 			String login;
 			login = userCreateOrLogin(in, con);
-			userOptions(in, con, login);
+			if(!login.equals(""))
+			{
+				userOptions(in, con, login);
+			}
 
 		} 
 		catch (Exception e) 
@@ -118,8 +121,11 @@ public class testdriver2 {
 				User users = new User();
 				String input = login + "," + password + "," + fullName + "," + age + "," + email + "," + phoneNumber
 						+ "," + address + "," + userType;
-				users.insertUser(input, con.con);
-				return login;
+				boolean resultOfCreate = users.insertUser(input, con.con);
+				if(resultOfCreate)
+				{
+					return login;
+				}
 			} 
 			else if (c == 2) // login by giving a user login and matching password
 			{
