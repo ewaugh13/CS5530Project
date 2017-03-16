@@ -8,7 +8,7 @@ public class Course {
 		
 		public String getCourse(String cname, String dname, Statement stmt)
 		{
-			String sql="insert into Users "
+			//String sql="insert into Users ";
 			String sql="select * from course where cname like '%"+cname+"%' and dname like '%"+dname+"%'";
 			String output="";
 			ResultSet rs=null;
