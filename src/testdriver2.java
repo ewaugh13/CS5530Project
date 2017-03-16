@@ -13,8 +13,8 @@ public class testdriver2 {
 		// more?
 		System.out.println("        Welcome to the Uotel System     ");
 		System.out.println("1. Register into Uotel System");
-		System.out.println("2. Login into Uotel");
-		System.out.println("3. exit Uotel System:");
+		System.out.println("2. Login into Uotel System");
+		System.out.println("3. exit Uotel System");
 		System.out.println("please enter your choice:");
 	}
 
@@ -22,7 +22,7 @@ public class testdriver2 {
 	{
 		System.out.println("1. Reserve a Uotel temorary housing");
 		System.out.println("2. List or update a temporary housing you own");
-		System.out.println("3. exit Uotel System:");
+		System.out.println("3. exit Uotel System");
 		System.out.println("please enter your choice:");
 	}
 
@@ -140,7 +140,7 @@ public class testdriver2 {
 				boolean loginResult = users.loginIntoAccount(input, con.stmt);
 				if (loginResult) 
 				{
-					System.out.println("successful login");
+					System.out.println("successful login \n");
 					return login;
 				} 
 				else 
@@ -158,7 +158,7 @@ public class testdriver2 {
 	}
 
 
-	public static void userOptions(BufferedReader in, Connector con, String Login) throws Exception 
+	public static void userOptions(BufferedReader in, Connector con, String login) throws Exception 
 	{
 		String choice;
 		int c = 0;
@@ -193,43 +193,71 @@ public class testdriver2 {
 			} 
 			else if (c == 2) // user creates or updates a TH
 			{
-				String password; 
-				String fullName;
-				String age;
-				String email;
-				String phoneNumber;
-				String address;
-				String userType;
-
-				System.out.println("please enter a password:");
-				while ((password = in.readLine()) == null && password.length() == 0)
-					;
-				System.out.println("please enter your full name:");
-				while ((fullName = in.readLine()) == null && fullName.length() == 0)
-					;
-				System.out.println("please enter your age(have to be 18 or older to use Uotel):");
-				while ((age = in.readLine()) == null && age.length() == 0)
-					;
-				System.out.println("please enter your email:");
-				while ((email = in.readLine()) == null && email.length() == 0)
-					;
-				System.out.println("you can enter your phone number(optional) in the format of 303-987-1234:");
-				while ((phoneNumber = in.readLine()) == null && phoneNumber.length() == 0)
-					;
-				System.out.println("you can enter your address(optional):");
-				while ((address = in.readLine()) == null && address.length() == 0)
-					;
-				System.out.println("are you a temorary house owner(yes or no):");
-				while ((userType = in.readLine()) == null && userType.length() == 0)
-					;
-				
-				
-
+				insertOrUpdateTH(in, con, login);
 			} 
 			else 
 			{
 				System.out.println("EoM");
 				con.stmt.close();
+				break;
+			}
+		}
+	}
+	
+	private static void insertOrUpdateTH(BufferedReader in, Connector con, String login) throws IOException, SQLException
+	{
+		String choice;
+		int c = 0;
+		while (true) 
+		{
+			System.out.println("1. Create a temporary housing");
+			System.out.println("2. Update a temporary housing");
+			System.out.println("3. Go back to user options");
+			System.out.println("please enter your choice:");
+			
+			while ((choice = in.readLine()) == null && choice.length() == 0)
+				;
+			try 
+			{
+				c = Integer.parseInt(choice);
+			} 
+			catch (Exception e) 
+			{
+				continue;
+			}
+			if (c < 1 | c > 3)
+				continue;		
+		
+			String address; 
+			String THName;
+			String yearBuilt;
+			String category;
+
+			System.out.println("please enter a address:");
+			while ((address = in.readLine()) == null && address.length() == 0)
+				;
+			System.out.println("please enter your THName:");
+			while ((THName = in.readLine()) == null && THName.length() == 0)
+				;
+			System.out.println("please enter the yearBuilt:");
+			while ((yearBuilt = in.readLine()) == null && yearBuilt.length() == 0)
+				;
+			System.out.println("please enter the category:");
+			while ((category = in.readLine()) == null && category.length() == 0)
+				;
+
+			TH Thdata = new TH();
+			if(c == 1)
+			{
+				String input = address + "," + THName + "," + yearBuilt + "," + category + "," + login;
+				Thdata.insertTH(input, con.con, con.stmt);
+			}
+			else if(c == 2)
+			{
+				
+			}
+			else
+			{
 				break;
 			}
 		}

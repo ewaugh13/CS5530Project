@@ -23,14 +23,17 @@ public class TH
 		String output = "";
 		ResultSet rs = null;
 		rs = stmt.executeQuery(THIDgetter);
-		output = rs.getString("THID");
+		while (rs.next())
+		{
+			output = rs.getString("max(THID)");
+		}
 		if(output == "")
 		{
 			output = "0";
 		}
 		
 		int THID = Integer.parseInt(output) + 1;
-		String URL = "https://Uotel.com/temporary-housing/" + THID;
+		String URL = "https://uotel.com/temporary-housing/" + THID;
 		
 		// create the mysql insert preparedstatement
 		PreparedStatement preparedStmt = conn.prepareStatement(query);
@@ -46,7 +49,6 @@ public class TH
 
 	private static void setValues(PreparedStatement preparedStmt, String[] splited, int THID, String URL) throws SQLException, IOException
 	{
-		
 		try
 		{
 			preparedStmt.setInt(1, THID);
@@ -57,7 +59,7 @@ public class TH
 			preparedStmt.setString(6, splited[3]); //category
 			preparedStmt.setString(7, splited[4]); //login
 			
-			exectueStmt(preparedStmt, splited);
+			exectueStmt(preparedStmt, splited, THID);
 		}
 		catch(Exception e)
 		{
@@ -66,12 +68,12 @@ public class TH
 		
 	}
 	
-	private static void exectueStmt(PreparedStatement preparedStmt, String[] splited) throws SQLException, IOException
+	private static void exectueStmt(PreparedStatement preparedStmt, String[] splited, int THID) throws SQLException, IOException
 	{
 		try
 		{
 			preparedStmt.execute();
-			System.out.println("TH created with THID " + splited[0]);
+			System.out.println("TH created with THID " + THID);
 		}
 		catch (SQLException e)
 		{
