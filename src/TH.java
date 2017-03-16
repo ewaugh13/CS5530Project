@@ -41,29 +41,51 @@ public class TH
 	}
 
 	
-	public void updateTH() //check for that users login name here
+	public void updateTH(String input, Connection conn, Statement stmt) throws SQLException, IOException //check for that users login name here
 	{
+		String[] splitted = input.split(",");
+		PreparedStatement preparedStmt = conn.prepareStatement(
+			      "update THData set address = ?, THname = ?, yearBuilt = ?, category = ?");
+		
+		updateValues(preparedStmt, splitted);
 		
 	}
 
+	private static void updateValues(PreparedStatement preparedStmt, String[] splitted) throws SQLException, IOException
+	{
+		try
+		{
+			preparedStmt.setString(1, splitted[0]);
+			preparedStmt.setInt(2, Integer.parseInt(splitted[1]));
+			preparedStmt.setString(3, splitted[2]);
+			preparedStmt.setString(4, splitted[3]);
+			
+			updateStmt(preparedStmt, splitted);
+		}
+		catch(Exception e)
+		{
+			System.out.println("an inputed value did not match specifications of what is needed. try again");
+		}
+	}
 
-	private static void setValues(PreparedStatement preparedStmt, String[] splited, int THID, String URL) throws SQLException, IOException
+	private static void setValues(PreparedStatement preparedStmt, String[] splitted, int THID, String URL) throws SQLException, IOException
 	{
 		try
 		{
 			preparedStmt.setInt(1, THID);
 			preparedStmt.setString(2, URL);
-			preparedStmt.setString(3, splited[0]); //address
-			preparedStmt.setString(4, splited[1]); //THname
-			preparedStmt.setInt(5, Integer.parseInt(splited[2])); //yearBuilt
-			preparedStmt.setString(6, splited[3]); //category
-			preparedStmt.setString(7, splited[4]); //login
+			preparedStmt.setString(3, splitted[0]); //address
+			preparedStmt.setString(4, splitted[1]); //THname
+			preparedStmt.setInt(5, Integer.parseInt(splitted[2])); //yearBuilt
+			preparedStmt.setString(6, splitted[3]); //category
+			preparedStmt.setString(7, splitted[4]); //login
 			
-			exectueStmt(preparedStmt, splited, THID);
+			exectueStmt(preparedStmt, splitted, THID);
+
 		}
 		catch(Exception e)
 		{
-			System.out.println("an inputed value did not match specifications of what is needed try again");
+			System.out.println("an inputed value did not match specifications of what is needed. try again");
 		}
 		
 	}
@@ -78,6 +100,19 @@ public class TH
 		catch (SQLException e)
 		{
 			System.out.println("Can not create the TH. Make sure all of your values are correct.");
+		}
+	}
+	
+	private static void updateStmt(PreparedStatement preparedStmt, String[] splitted) throws SQLException, IOException
+	{
+		try
+		{
+			preparedStmt.execute();
+			System.out.println("TH updated");
+		}
+		catch (SQLException e)
+		{
+			System.out.println("Can not update the TH. Make sure all of your values are correct.");
 		}
 	}
 	
