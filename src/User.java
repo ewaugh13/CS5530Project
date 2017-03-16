@@ -3,14 +3,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class User {
-	public User() {
-		//List<String> UserLogins = new ArrayList<String>(); // might or might not need this
-
-	}
+	public User() {}
 
 	public String getUser(String input, Statement stmt) {
 		// String sql = get info from input and run query to get information
@@ -34,6 +29,7 @@ public class User {
 	{
 		System.out.println("1. Try another login name:");
 		System.out.println("2. Return to welcome screen:");
+		System.out.println("please enter your choice:");
 		
 		String choice;
 		int c = 0;
@@ -81,6 +77,7 @@ public class User {
 		} 
 		catch (SQLException e) 
 		{
+			System.err.println(e.getMessage());
 			System.out.println("cannot create the user try again with a different login name or make sure that the other information fits the specification \n");
 			displayUserOptions(preparedStmt, splited);
 		}
@@ -102,6 +99,10 @@ public class User {
 			preparedStmt.setString(1, splited[0]);
 			preparedStmt.setString(2, splited[1]);
 			preparedStmt.setString(3, splited[2]);
+			if(Integer.parseInt(splited[3]) < 18)
+			{
+				throw new SQLException();
+			}
 			preparedStmt.setInt(4, Integer.parseInt(splited[3]));
 			preparedStmt.setString(5, splited[4]);
 			preparedStmt.setString(6, splited[5]);
@@ -112,7 +113,7 @@ public class User {
 		}
 		catch (Exception e)
 		{
-			System.out.println("a inputed value did not match specifications of what is needed try again");
+			System.out.println("an inputed value did not match specifications of what is needed. Either try a new login name or if you aren't 18 or older please have an adult help you.");
 			displayUserOptions(preparedStmt, splited);
 		}
 	}
@@ -129,5 +130,45 @@ public class User {
 			System.out.println("a inputed value did not match specifications of what is needed try again");
 			displayUserOptions(preparedStmt, splited);
 		}
+	}
+	
+	public boolean loginIntoAccount(String input, Statement stmt)
+	{
+		String[] splited = input.split(",");
+		String sql = "Select * From Users u Where u.login = '" + splited[0] + "' AND u.password = '" + splited[1] + "'";
+		System.out.println("executing " + sql);
+		ResultSet rs = null;
+		 	try
+		 	{
+		 		rs = stmt.executeQuery(sql);
+		 		String result = "";
+	   		 	while (rs.next())
+				{
+	   		 		result = rs.getString("login"); 
+				}
+		 		if(result.equals(splited[0]))
+		 		{
+		 			rs.close();
+			 		return true;
+		 		}
+		 		rs.close();
+		 	}
+		 	catch(Exception e)
+		 	{
+		 		System.out.println("cannot execute the query");
+		 	}
+		 	finally
+		 	{
+		 		try
+		 		{
+		 			if (rs!=null && !rs.isClosed())
+		 				rs.close();
+		 		}
+		 		catch(Exception e)
+		 		{
+		 			System.out.println("cannot close resultset");
+		 		}
+		 	}
+		 	return false;
 	}
 }

@@ -1,3 +1,4 @@
+
 import java.io.IOException;
 
 import java.sql.*;
@@ -7,12 +8,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.BufferedReader;
+
 public class TH
 {
-	public TH() 
-	{
-		List<String> THIds = new ArrayList<String>(); 
-	}
+	public TH() {}
 	
 	public void insertTH(String input, Connection conn, Statement stmt) throws SQLException, IOException
 	{
@@ -37,6 +36,7 @@ public class TH
 		PreparedStatement preparedStmt = conn.prepareStatement(query);
 		setValues(preparedStmt, splitted, THID, URL); //sets the values and calls execute
 	}
+
 	
 	public void updateTH() //check for that users login name here
 	{
