@@ -13,12 +13,13 @@ public class TH
 {
 	public TH() {}
 	
-	public void insertTH(String input, Connection conn, Statement stmt) throws SQLException, IOException
+	public void insertTH(String input, String login, Connection conn, Statement stmt) throws SQLException, IOException
 	{
 		String[] splitted = input.split(",");
 		String query = " insert into THData (THID, url, address, THname, yearBuilt, category, login)"
 				     + " values (?, ?, ?, ?, ?, ?, ?)";
 		String THIDgetter = "select max(THID) from THData";
+		
 		
 		String output = "";
 		ResultSet rs = null;
@@ -32,6 +33,10 @@ public class TH
 			output = "0";
 		}
 		
+		String updateUser = "update Users set userType = true where login = " + login;
+		rs = stmt.executeQuery(updateUser);
+				
+		
 		int THID = Integer.parseInt(output) + 1;
 		String URL = "https://uotel.com/temporary-housing/" + THID;
 		
@@ -41,11 +46,11 @@ public class TH
 	}
 
 	
-	public void updateTH(String input, Connection conn, Statement stmt) throws SQLException, IOException //check for that users login name here
+	public void updateTH(String input, int THID, Connection conn, Statement stmt) throws SQLException, IOException //check for that users login name here
 	{
 		String[] splitted = input.split(",");
 		PreparedStatement preparedStmt = conn.prepareStatement(
-			      "update THData set address = ?, THname = ?, yearBuilt = ?, category = ?");
+			      "update THData set address = ?, THname = ?, yearBuilt = ?, category = ? where THID = " + THID);
 		
 		updateValues(preparedStmt, splitted);
 		
@@ -56,8 +61,8 @@ public class TH
 		try
 		{
 			preparedStmt.setString(1, splitted[0]);
-			preparedStmt.setInt(2, Integer.parseInt(splitted[1]));
-			preparedStmt.setString(3, splitted[2]);
+			preparedStmt.setString(2, splitted[1]);
+			preparedStmt.setInt(3, Integer.parseInt(splitted[2]));
 			preparedStmt.setString(4, splitted[3]);
 			
 			updateStmt(preparedStmt, splitted);

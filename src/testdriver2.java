@@ -187,9 +187,10 @@ public class testdriver2 {
 				System.out.println("please enter a TH id for the house you are searching availablity:");
 				while ((TemporaryHousingID = in.readLine()) == null && TemporaryHousingID.length() == 0)
 					;
-
+/*
 				Available available = new Available();
 				available.getDatesAvailable(TemporaryHousingID, con.stmt);
+				*/
 			} 
 			else if (c == 2) // user creates or updates a TH
 			{
