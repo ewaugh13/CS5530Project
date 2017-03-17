@@ -23,7 +23,7 @@ public class testdriver2 {
 	public static void displayUserOptions()
 	{
 		System.out.println("1. Reserve a Uotel temorary housing");
-		System.out.println("2. List or update a temporary housing you own");
+		System.out.println("2. List or update a temporary housing you own. Can also add a period available for your TH.");
 		System.out.println("3. Record a place you stayed at");
 		System.out.println("4. Record your favorite place to stay");
 		System.out.println("5. exit Uotel System");
@@ -271,7 +271,7 @@ public class testdriver2 {
 			}
 			else if(c == 2)
 			{
-				int THID = Thdata.selectTHUpdate(con.stmt, login);
+				int THID = Thdata.selectTH(con.stmt, login, "update");
 				
 				if(THID > 0)
 				{
@@ -294,16 +294,25 @@ public class testdriver2 {
 			}
 			else if(c == 3)
 			{
-				Period per = new Period();
-				String dateFrom; 
-				String dateTo;
-				System.out.println("please enter a start for the reservation (in the format of yyyy/MM/dd):");
-				while ((dateFrom = in.readLine()) == null && dateFrom.length() == 0)
-					;
-				System.out.println("please enter a end for the reservation (in the format of yyyy/MM/dd):");
-				while ((dateTo = in.readLine()) == null && dateTo.length() == 0)
-					;
-				per.insertPeriod(dateFrom, dateTo, con.con, con.stmt);
+				Available available = new Available();
+				String pricePerNight = "";
+				int THID = Thdata.selectTH(con.stmt, login, "available");
+				
+				if(THID > 0)
+				{
+					System.out.println("please enter what the price per night will be (just enter an integer value like 24. No dollar sign):");
+					while ((pricePerNight = in.readLine()) == null && pricePerNight.length() == 0)
+						;
+					try
+					{
+						available.createAvailableTime(Integer.parseInt(pricePerNight), THID, con.stmt, con.con);
+					}
+					catch(Exception e)
+					{
+						System.out.println("Make sure your price per night is the right value.");
+					}
+				}
+				
 			}
 			else
 			{
