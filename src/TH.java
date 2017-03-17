@@ -48,7 +48,7 @@ public class TH
 		setValues(preparedStmt, stmt, conn, splitted, THID, URL); //sets the values and calls execute
 	}
 
-	public int selectTHUpdate(Statement stmt, String login) throws SQLException, IOException
+	public int selectTH(Statement stmt, String login, String operation) throws SQLException, IOException
 	{
 		String query = "Select THID, THname From THData T Where T.login = " + login;
 		String output = "";
@@ -84,7 +84,14 @@ public class TH
 		{
 			System.out.println("Here are the THID's of the temporary houses you listed and the names of them:");
 			System.out.println(output);
-			System.out.println("Select the THID of the house you want to update:");
+			if(operation.equals("update"))
+			{
+				System.out.println("Select the THID of the house you want to update:");
+			}
+			else if(operation.equals("available"))
+			{
+				System.out.println("Select the THID of the house you want to make a available:");
+			}
 		
 			String choice;
 			int c = 0;

@@ -10,7 +10,7 @@ public class Period
 {
 	public Period(){}
 	
-	public void insertPeriod(String dateFrom, String dateTo, Connection conn, Statement stmt) throws SQLException, IOException, ParseException
+	public int insertPeriod(String dateFrom, String dateTo, Connection conn, Statement stmt) throws SQLException, IOException, ParseException, NumberFormatException
 	{
 
 		if(Pattern.matches("\\s*", dateFrom))
@@ -26,11 +26,32 @@ public class Period
 		
 		String output = "";
 		ResultSet rs = null;
-		rs = stmt.executeQuery(pidgetter);
-		while (rs.next())
+		try
 		{
-			output = rs.getString("max(pid)");
+			rs = stmt.executeQuery(pidgetter);
+			while (rs.next())
+			{
+				output = rs.getString("max(pid)");
+			}
+			rs.close();
 		}
+   		catch(Exception e)
+   		{
+   			
+   		}
+   		finally
+   		{
+   			try
+   			{
+   				if (rs!=null && !rs.isClosed())
+	   		 			rs.close();
+   		 	}
+   		 	catch(Exception e)
+   		 	{
+   		 		System.out.println("cannot close resultset");
+   		 	}
+   		}
+		
 		if(output == null || output.equals(""))
 		{
 			output = "0";
@@ -52,40 +73,48 @@ public class Period
 
 			// create the mysql insert preparedstatement
 			PreparedStatement preparedStmt = conn.prepareStatement(query);
-			setValues(preparedStmt, pid, dateFromSQL, dateToSQL); //sets the values and calls execute
+			if(setValues(preparedStmt, pid, dateFromSQL, dateToSQL)) //if values are set correctly it returns the pid and if not return 0
+			{
+				return pid;
+			}
+			return 0;
+			
 		}
 		catch(Exception e)
 		{
 			System.out.println("Dates not put in the correct format please try again. \n");
+			return 0;
 		}
 	}
 	
-	private static void setValues(PreparedStatement preparedStmt, int pid, java.sql.Date dateFrom, java.sql.Date dateTo) throws SQLException, IOException
+	private static boolean setValues(PreparedStatement preparedStmt, int pid, java.sql.Date dateFrom, java.sql.Date dateTo) throws SQLException, IOException
 	{
 		try
 		{
 			preparedStmt.setInt(1, pid);
 			preparedStmt.setDate(2, dateFrom);
 			preparedStmt.setDate(3, dateTo);
-			exectueStmt(preparedStmt);
+			return exectueStmt(preparedStmt);
 		}
 		catch(Exception e)
 		{
 			System.out.println("Incorect values please try again. \n");
+			return false;
 		}
 		
 	}
 	
-	private static void exectueStmt(PreparedStatement preparedStmt) throws SQLException, IOException
+	private static boolean exectueStmt(PreparedStatement preparedStmt) throws SQLException, IOException
 	{
 		try
 		{
 			preparedStmt.execute();
-			System.out.println("Successfully created period. \n");
+			return true;
 		}
 		catch (SQLException e)
 		{
 			System.out.println("Can not create the period. \n");
+			return false;
 		}
 	}
 }
