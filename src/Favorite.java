@@ -43,7 +43,7 @@ public class Favorite
 		{
 			preparedStmt.setInt(1, THID);
 			preparedStmt.setString(2, login);
-			preparedStmt.setDate(3, date); //date 
+			preparedStmt.setDate(3, date);
 			
 			exectueStmt(preparedStmt);
 		}

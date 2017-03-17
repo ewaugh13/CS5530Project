@@ -1,6 +1,7 @@
 
 import java.lang.*;
 import java.sql.*;
+import java.text.ParseException;
 import java.io.*;
 
 public class testdriver2 {
@@ -219,7 +220,7 @@ public class testdriver2 {
 		}
 	}
 	
-	private static void insertOrUpdateTH(BufferedReader in, Connector con, String login) throws IOException, SQLException
+	private static void insertOrUpdateTH(BufferedReader in, Connector con, String login) throws IOException, SQLException, ParseException
 	{
 		String choice;
 		int c = 0;
@@ -227,7 +228,8 @@ public class testdriver2 {
 		{
 			System.out.println("1. Create a temporary housing");
 			System.out.println("2. Update a temporary housing");
-			System.out.println("3. Go back to user options");
+			System.out.println("3. Create time available for your temporary housing");
+			System.out.println("4. Go back to user options");
 			System.out.println("please enter your choice:");
 			
 			while ((choice = in.readLine()) == null && choice.length() == 0)
@@ -289,6 +291,19 @@ public class testdriver2 {
 					String input = address + "," + THName + "," + yearBuilt + "," + category;
 					Thdata.updateTH(con.con, input, THID);
 				}
+			}
+			else if(c == 3)
+			{
+				Period per = new Period();
+				String dateFrom; 
+				String dateTo;
+				System.out.println("please enter a start for the reservation (in the format of yyyy/MM/dd):");
+				while ((dateFrom = in.readLine()) == null && dateFrom.length() == 0)
+					;
+				System.out.println("please enter a end for the reservation (in the format of yyyy/MM/dd):");
+				while ((dateTo = in.readLine()) == null && dateTo.length() == 0)
+					;
+				per.insertPeriod(dateFrom, dateTo, con.con, con.stmt);
 			}
 			else
 			{
