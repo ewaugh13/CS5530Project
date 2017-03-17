@@ -10,7 +10,7 @@ public class Period
 {
 	public Period(){}
 	
-	private static void insertPeriod(String dateFrom, String dateTo, Connection conn, Statement stmt) throws SQLException, IOException, ParseException
+	public void insertPeriod(String dateFrom, String dateTo, Connection conn, Statement stmt) throws SQLException, IOException, ParseException
 	{
 
 		if(Pattern.matches("\\s*", dateFrom))
@@ -31,10 +31,11 @@ public class Period
 		{
 			output = rs.getString("max(pid)");
 		}
-		if(output == "")
+		if(output == null || output.equals(""))
 		{
 			output = "0";
 		}
+		int pid = Integer.parseInt(output) + 1;
 
 		String query = " insert into Period (pid, fromDate, toDate)"
 				+ " values (?, ?, ?)";
@@ -51,11 +52,11 @@ public class Period
 
 			// create the mysql insert preparedstatement
 			PreparedStatement preparedStmt = conn.prepareStatement(query);
-			setValues(preparedStmt, Integer.getInteger(output), dateFromSQL, dateToSQL); //sets the values and calls execute
+			setValues(preparedStmt, pid, dateFromSQL, dateToSQL); //sets the values and calls execute
 		}
 		catch(Exception e)
 		{
-			System.out.println("Dates not put in the correct format please try again.");
+			System.out.println("Dates not put in the correct format please try again. \n");
 		}
 	}
 	
@@ -70,7 +71,7 @@ public class Period
 		}
 		catch(Exception e)
 		{
-			System.out.println("Incorect values please try again.");
+			System.out.println("Incorect values please try again. \n");
 		}
 		
 	}
