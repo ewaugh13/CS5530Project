@@ -95,7 +95,7 @@ public class User {
 	private static boolean setValues(PreparedStatement preparedStmt, String[] splited) throws SQLException, IOException
 	{
 		boolean isUser;
-		if (splited[7] == "yes") 
+		if (splited[7].equals("yes"))
 		{
 			isUser = true;
 		} 

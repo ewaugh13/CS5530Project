@@ -26,6 +26,7 @@ public class TH
 				     + " values (?, ?, ?, ?, ?, ?, ?)";
 		String THIDgetter = "select max(THID) from THData";
 		
+		
 		String output = "";
 		ResultSet rs = null;
 		rs = stmt.executeQuery(THIDgetter);
@@ -37,13 +38,14 @@ public class TH
 		{
 			output = "0";
 		}
+				
 		
 		int THID = Integer.parseInt(output) + 1;
 		String URL = "https://uotel.com/temporary-housing/" + THID;
 		
 		// create the mysql insert preparedstatement
 		PreparedStatement preparedStmt = conn.prepareStatement(query);
-		setValues(preparedStmt, splitted, THID, URL); //sets the values and calls execute
+		setValues(preparedStmt, stmt, conn, splitted, THID, URL); //sets the values and calls execute
 	}
 
 	public int selectTHUpdate(Statement stmt, String login) throws SQLException, IOException
@@ -126,7 +128,6 @@ public class TH
 			
 		PreparedStatement preparedStmt = conn.prepareStatement(
 			      "update THData set address = ?, THname = ?, yearBuilt = ?, category = ? Where THID = " + THID);
-		
 		updateValues(preparedStmt, splitted);
 		
 	}
@@ -148,7 +149,7 @@ public class TH
 		}
 	}
 
-	private static void setValues(PreparedStatement preparedStmt, String[] splitted, int THID, String URL) throws SQLException, IOException
+	private static void setValues(PreparedStatement preparedStmt, Statement stmt, Connection conn, String[] splitted, int THID, String URL) throws SQLException, IOException
 	{
 		try
 		{
@@ -160,7 +161,7 @@ public class TH
 			preparedStmt.setString(6, splitted[3]); //category
 			preparedStmt.setString(7, splitted[4]); //login
 			
-			exectueStmt(preparedStmt, splitted, THID);
+			exectueStmt(preparedStmt, splitted, THID, stmt, conn);
 
 		}
 		catch(Exception e)
@@ -169,13 +170,34 @@ public class TH
 		}
 		
 	}
-	
-	private static void exectueStmt(PreparedStatement preparedStmt, String[] splited, int THID) throws SQLException, IOException
+
+	private static void exectueStmt(PreparedStatement preparedStmt, String[] splitted, int THID, Statement stmt, Connection conn) throws SQLException, IOException
 	{
 		try
 		{
 			preparedStmt.execute();
-			System.out.println("TH created with THID " + THID);
+			System.out.println("TH created with THID " + THID + "\n");
+			
+			String userNeedUpdated = "Select userType From Users Where login = " + splitted[4];
+			String output = "";
+			ResultSet rs = null;
+			rs = stmt.executeQuery(userNeedUpdated);
+			while (rs.next())
+			{
+				output = rs.getString("userType");
+			}
+			if(output.equals("0")) //if 0 then its false and needs to be updated to true only if they insert a TH correctly
+			{
+				PreparedStatement preparedUpdateStmt = conn.prepareStatement("update Users set userType = ? Where login = " + splitted[4]);
+				try
+				{
+					preparedUpdateStmt.setBoolean(1, true);
+					preparedUpdateStmt.execute();
+				}
+				catch(Exception e)
+				{
+				}
+			}
 		}
 		catch (SQLException e)
 		{
