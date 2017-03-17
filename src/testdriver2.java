@@ -8,7 +8,8 @@ public class testdriver2 {
 	/**
 	 * @param args
 	 */
-	public static void loginOrCreateAccount() {
+	public static void loginOrCreateAccount() 
+	{
 		// add more options I think based on the 14 sections but there could be
 		// more?
 		System.out.println("        Welcome to the Uotel System     ");
@@ -22,7 +23,9 @@ public class testdriver2 {
 	{
 		System.out.println("1. Reserve a Uotel temorary housing");
 		System.out.println("2. List or update a temporary housing you own");
-		System.out.println("3. exit Uotel System");
+		System.out.println("3. Record a place you stayed at");
+		System.out.println("4. Record your favorite place to stay");
+		System.out.println("5. exit Uotel System");
 		System.out.println("please enter your choice:");
 	}
 
@@ -176,7 +179,7 @@ public class testdriver2 {
 			{
 				continue;
 			}
-			if (c < 1 | c > 3)
+			if (c < 1 | c > 5)
 				continue;
 			if (c == 1) // reserving a place
 			{
@@ -195,7 +198,18 @@ public class testdriver2 {
 			else if (c == 2) // user creates or updates a TH
 			{
 				insertOrUpdateTH(in, con, login);
-			} 
+			}
+			else if(c == 3)
+			{
+				
+			}
+			else if(c == 4)
+			{
+				Favorite favorite = new Favorite();
+				int selectionID = favorite.selectFavorite(con.stmt);
+				
+				favorite.updateFavorite(login, selectionID, con.con, con.stmt);
+			}
 			else 
 			{
 				System.out.println("EoM");
