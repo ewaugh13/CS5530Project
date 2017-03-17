@@ -12,7 +12,6 @@ public class Period
 	
 	private static void insertPeriod(String dateFrom, String dateTo, Connection conn, Statement stmt) throws SQLException, IOException, ParseException
 	{
-
 		if(Pattern.matches("\\s*", dateFrom))
 		{
 			dateFrom = null;
