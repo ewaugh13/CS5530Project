@@ -18,7 +18,6 @@ public class User {
 	public boolean insertUser(String input, Connection conn) throws SQLException, IOException
 	{
 		String[] splitted = input.split(",");
-		//Pattern re = Pattern.compile("\\s*"); //regex for whitespace
 		for(int i = 0; i < splitted.length; i++)
 		{
 			if(Pattern.matches("\\s*", splitted[i]))

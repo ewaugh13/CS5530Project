@@ -233,28 +233,47 @@ public class testdriver2 {
 			String yearBuilt;
 			String category;
 
-			System.out.println("please enter a address:");
-			while ((address = in.readLine()) == null && address.length() == 0)
-				;
-			System.out.println("please enter your THName:");
-			while ((THName = in.readLine()) == null && THName.length() == 0)
-				;
-			System.out.println("please enter the yearBuilt:");
-			while ((yearBuilt = in.readLine()) == null && yearBuilt.length() == 0)
-				;
-			System.out.println("please enter the category:");
-			while ((category = in.readLine()) == null && category.length() == 0)
-				;
-
 			TH Thdata = new TH();
 			if(c == 1)
 			{
+				System.out.println("please enter a address:");
+				while ((address = in.readLine()) == null && address.length() == 0)
+					;
+				System.out.println("please enter your THName:");
+				while ((THName = in.readLine()) == null && THName.length() == 0)
+					;
+				System.out.println("please enter the yearBuilt:");
+				while ((yearBuilt = in.readLine()) == null && yearBuilt.length() == 0)
+					;
+				System.out.println("please enter the category:");
+				while ((category = in.readLine()) == null && category.length() == 0)
+					;
+				
 				String input = address + "," + THName + "," + yearBuilt + "," + category + "," + login;
 				Thdata.insertTH(input, con.con, con.stmt);
 			}
 			else if(c == 2)
 			{
+				int THID = Thdata.selectTHUpdate(con.stmt, login);
 				
+				if(THID > 0)
+				{
+					System.out.println("please enter a address:");
+					while ((address = in.readLine()) == null && address.length() == 0)
+						;
+					System.out.println("please enter your THName:");
+					while ((THName = in.readLine()) == null && THName.length() == 0)
+						;
+					System.out.println("please enter the yearBuilt:");
+					while ((yearBuilt = in.readLine()) == null && yearBuilt.length() == 0)
+						;
+					System.out.println("please enter the category:");
+					while ((category = in.readLine()) == null && category.length() == 0)
+						;
+				
+					String input = address + "," + THName + "," + yearBuilt + "," + category;
+					Thdata.updateTH(con.con, input, THID);
+				}
 			}
 			else
 			{
