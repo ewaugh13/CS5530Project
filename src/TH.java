@@ -112,12 +112,13 @@ public class TH
 			}
 			else
 			{
+				System.out.println("Wrong THID. Please select a correct TH by THID next time. \n");
 				return 0;
 			}
 		}
 		else
 		{
-			System.out.println("You have no temporary houses listed so there are none to update.");
+			System.out.println("You have no temporary houses listed so there are none to update. \n");
 			return 0;
 		}
 	}
@@ -224,5 +225,5 @@ public class TH
 			System.out.println("Can not update the TH. Make sure all of your values are correct. \n");
 		}
 	}
-	
+
 }

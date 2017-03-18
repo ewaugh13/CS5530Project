@@ -2,6 +2,10 @@
 import java.lang.*;
 import java.sql.*;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.io.*;
 
 public class testdriver2 {
@@ -61,7 +65,6 @@ public class testdriver2 {
 				try 
 				{
 					con.closeConnection();
-					System.out.println("Database connection terminated");
 				}
 				catch (Exception e) 
 				{
@@ -154,22 +157,23 @@ public class testdriver2 {
 			} 
 			else 
 			{
-				System.out.println("EoM");
+				System.out.println("Thank you for using Uotel System. \n");
 				con.stmt.close();
 				return "";
 			}
 		}
 	}
 
-
 	public static void userOptions(BufferedReader in, Connector con, String login) throws Exception 
 	{
 		String choice;
 		int c = 0;
-		while (true) {
+		Map<Integer, Integer> dictionaryOfReserveIDs = new HashMap<Integer, Integer>();
+		Map<Integer, Integer> dictionaryOfVisitIDs = new HashMap<Integer, Integer>();
+		while (true) 
+		{
 			displayUserOptions();
-			//String login;
-			//String password;
+			
 			while ((choice = in.readLine()) == null && choice.length() == 0)
 				;
 			try 
@@ -184,17 +188,7 @@ public class testdriver2 {
 				continue;
 			if (c == 1) // reserving a place
 			{
-				//get the periods available for a TH
-				String TemporaryHousingID;
-
-
-				System.out.println("please enter a TH id for the house you are searching availablity:");
-				while ((TemporaryHousingID = in.readLine()) == null && TemporaryHousingID.length() == 0)
-					;
-				/*
-				Available available = new Available();
-				available.getDatesAvailable(TemporaryHousingID, con.stmt);
-				*/
+				reserveTH(in, con, login, dictionaryOfReserveIDs);
 			} 
 			else if (c == 2) // user creates or updates a TH
 			{
@@ -213,7 +207,8 @@ public class testdriver2 {
 			}
 			else 
 			{
-				System.out.println("EoM");
+				logoutSelection(login, dictionaryOfReserveIDs, dictionaryOfVisitIDs, in, con);
+				System.out.println("Thank you for using Uotel System. \n");
 				con.stmt.close();
 				break;
 			}
@@ -300,7 +295,7 @@ public class testdriver2 {
 				
 				if(THID > 0)
 				{
-					System.out.println("please enter what the price per night will be (just enter an integer value like 24. No dollar sign):");
+					System.out.println("please enter what the price per night will be (just enter an integer value like 24. No dollar sign or decimal.):");
 					while ((pricePerNight = in.readLine()) == null && pricePerNight.length() == 0)
 						;
 					try
@@ -309,15 +304,105 @@ public class testdriver2 {
 					}
 					catch(Exception e)
 					{
-						System.out.println("Make sure your price per night is the right value.");
+						System.out.println("Make sure your price per night is the right value. \n");
 					}
-				}
-				
+				}	
 			}
 			else
 			{
 				break;
 			}
 		}
+	}
+
+	private static Map<Integer, Integer> reserveTH(BufferedReader in, Connector con, String login, Map<Integer, Integer> dictionaryOfReserveIDs) throws IOException, SQLException
+	{
+		while(true)
+		{
+			Available available = new Available();
+			
+			int THID = available.displayAndSelectTHAvialable(con.stmt, con.con);
+			if(THID > 0)
+			{
+				int pid = available.displayAndSelectPidAvialable(THID, con.stmt, con.con);
+				if(pid > 0)
+				{
+					dictionaryOfReserveIDs.put(THID, pid);
+				}
+			}
+			
+			String choice;
+			int c;
+
+			System.out.println("1. Reserve another temorary housing.");
+			System.out.println("2. Return to previous screen.");
+			System.out.println("please enter your choice (a choice that isn't 1 or 2 will automatically be choice 2): \n");
+				
+			while ((choice = in.readLine()) == null && choice.length() == 0)
+				;
+			try 
+			{
+				c = Integer.parseInt(choice);
+			} 
+			catch (Exception e) 
+			{
+				c = 2;
+				continue;
+			}
+			if (c == 1) // reserve another place
+			{
+				continue;
+			} 
+			else // return to menu
+			{
+				return dictionaryOfReserveIDs;
+			}
+		}
+	}
+
+	private static void logoutSelection(String login, Map<Integer, Integer> dictionaryOfReserveIDs, Map<Integer, Integer> dictionaryOfVisitIDs, BufferedReader in, Connector con) throws IOException, SQLException
+	{
+		if(dictionaryOfReserveIDs.size() > 0)
+		{
+			Available available = new Available();
+			for (Map.Entry<Integer, Integer> entry : dictionaryOfReserveIDs.entrySet())
+			{
+				//get key is THID get value is pid
+				available.displayReservations(entry.getKey(), entry.getValue(), con.stmt);
+			}
+			
+			String yesOrNo = "";
+			System.out.println("Would you like to confirm these reservations?. \n");
+			
+			System.out.println("please enter yes or no (a choice that isn't yes will automatically be no):");
+			while ((yesOrNo = in.readLine()) == null && yesOrNo.length() == 0)
+				;
+			
+			Reserve reserve = new Reserve();
+			if(yesOrNo.equals("yes"))
+			{
+				for (Map.Entry<Integer, Integer> entry : dictionaryOfReserveIDs.entrySet())
+				{
+					//get key is THID get value is pid
+					reserve.insertReservation(login, entry.getKey(), entry.getValue(), con.con, con.stmt);
+				}
+				System.out.println("Reservations made thank you. \n");
+			}
+			else
+			{
+				System.out.println("Reservations cancelled and cleared. \n");
+			}
+			
+			for (Map.Entry<Integer, Integer> entry : dictionaryOfReserveIDs.entrySet())
+			{
+				available.removeAvailabe(entry.getKey(), entry.getValue(), con.con);
+			}
+		}
+		else if(dictionaryOfVisitIDs.size() > 0)
+		{
+			// do the stuff here
+		}
+		dictionaryOfReserveIDs.clear();
+		dictionaryOfVisitIDs.clear();
 	}
 }
