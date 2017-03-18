@@ -20,7 +20,14 @@ public class Favorite
 				+ " values (?, ?, ?)";
 		String deleteSQL = "delete from Favorites where login = ?";
 	    PreparedStatement preparedDeleteStmt = conn.prepareStatement(deleteSQL);
-	    preparedDeleteStmt.setString(1, login);
+	    
+	    try
+	    {
+	    	preparedDeleteStmt.setString(1, login);
+	    }
+	    catch(Exception e)
+	    {		
+	    }
 	    
 	    try
 	    {
@@ -130,7 +137,7 @@ public class Favorite
 		}
 		else
 		{
-			System.out.println("There are no temporary houses listed so you can't select a favorite");
+			System.out.println("There are no temporary houses listed so you can't select a favorite. \n");
 			return 0;
 		}
 	}

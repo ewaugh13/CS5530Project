@@ -116,4 +116,29 @@ public class Period
 			return false;
 		}
 	}
+	
+	public void deletePeriod(int pid, Connection conn) throws SQLException, IOException
+	{
+		String deleteSQL = "delete from Period where pid = ?";
+	    PreparedStatement preparedDeleteStmt = conn.prepareStatement(deleteSQL);
+	    
+	    try
+	    {
+	    	preparedDeleteStmt.setInt(1, pid);
+	    }
+	    catch(Exception e)
+	    {
+	    	
+	    }
+	    
+	    try
+	    {
+	    	preparedDeleteStmt.execute();
+	    }
+		
+		catch(Exception e)
+		{
+			
+		}
+	}
 }

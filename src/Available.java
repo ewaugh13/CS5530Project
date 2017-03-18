@@ -51,6 +51,7 @@ public class Available
 			{
 				System.out.println("Could not create the available time try again. \n");
 				//deleate the pid created
+				per.deletePeriod(pid, conn);
 			}
 		}
 	}
