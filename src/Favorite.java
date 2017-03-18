@@ -25,14 +25,12 @@ public class Favorite
 	    	preparedDeleteStmt.setString(1, login);
 	    }
 	    catch(Exception e)
-	    {
-	    	
+	    {		
 	    }
 	    try
 	    {
 	    	preparedDeleteStmt.execute();
 	    }
-		
 		catch(Exception e)
 		{
 		}
@@ -136,7 +134,7 @@ public class Favorite
 		}
 		else
 		{
-			System.out.println("There are no temporary houses listed so you can't select a favorite");
+			System.out.println("There are no temporary houses listed so you can't select a favorite. \n");
 			return 0;
 		}
 	}

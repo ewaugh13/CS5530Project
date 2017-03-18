@@ -63,7 +63,7 @@ public class User {
 			}
 			if(c == 1)
 			{
-				System.out.println("please enter a new login name:");
+				System.out.println("please enter a new login name: ");
 				while ((login = in.readLine()) == null)
 					;
 				splited[0] = login;
@@ -121,7 +121,7 @@ public class User {
 		}
 		catch (Exception e)
 		{
-			System.out.println("an inputed value did not match specifications of what is needed. Either try a new login name or if you aren't 18 or older please have an adult help you.");
+			System.out.println("An inputed value did not match specifications of what is needed. Either try a new login name or if you aren't 18 or older please have an adult help you. \n");
 			return displayUserOptions(preparedStmt, splited);
 		}
 	}
@@ -135,7 +135,7 @@ public class User {
 		}
 		catch (Exception e)
 		{
-			System.out.println("a inputed value did not match specifications of what is needed try again");
+			System.out.println("An inputed value did not match specifications of what is needed try again. \n");
 			return displayUserOptions(preparedStmt, splited);
 		}
 	}

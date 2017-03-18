@@ -11,7 +11,6 @@ public class Period
 	
 	public int insertPeriod(String dateFrom, String dateTo, Connection conn, Statement stmt) throws SQLException, IOException, ParseException, NumberFormatException
 	{
-
 		if(Pattern.matches("\\s*", dateFrom))
 		{
 			dateFrom = null;
@@ -114,6 +113,31 @@ public class Period
 		{
 			System.out.println("Can not create the period. \n");
 			return false;
+		}
+	}
+	
+	public void deletePeriod(int pid, Connection conn) throws SQLException, IOException
+	{
+		String deleteSQL = "delete from Period where pid = ?";
+	    PreparedStatement preparedDeleteStmt = conn.prepareStatement(deleteSQL);
+	    
+	    try
+	    {
+	    	preparedDeleteStmt.setInt(1, pid);
+	    }
+	    catch(Exception e)
+	    {
+	    	
+	    }
+	    
+	    try
+	    {
+	    	preparedDeleteStmt.execute();
+	    }
+		
+		catch(Exception e)
+		{
+			
 		}
 	}
 }
