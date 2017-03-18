@@ -1,7 +1,7 @@
 
-import java.lang.*;
 import java.sql.*;
 import java.text.ParseException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -168,8 +168,8 @@ public class testdriver2 {
 	{
 		String choice;
 		int c = 0;
-		Map<Integer, Integer> dictionaryOfReserveIDs = new HashMap<Integer, Integer>();
-		Map<Integer, Integer> dictionaryOfVisitIDs = new HashMap<Integer, Integer>();
+		List<Map.Entry<Integer, Integer>> dictionaryOfReserveIDs = new ArrayList<Map.Entry<Integer, Integer>>();
+		List<Map.Entry<Integer, Integer>> dictionaryOfVisitIDs = new ArrayList<Map.Entry<Integer, Integer>>();
 		while (true) 
 		{
 			displayUserOptions();
@@ -237,7 +237,7 @@ public class testdriver2 {
 			{
 				continue;
 			}
-			if (c < 1 | c > 3)
+			if (c < 1 | c > 4)
 				continue;		
 		
 			String address; 
@@ -315,7 +315,7 @@ public class testdriver2 {
 		}
 	}
 
-	private static Map<Integer, Integer> reserveTH(BufferedReader in, Connector con, String login, Map<Integer, Integer> dictionaryOfReserveIDs) throws IOException, SQLException
+	private static List<Map.Entry<Integer, Integer>> reserveTH(BufferedReader in, Connector con, String login, List<Map.Entry<Integer, Integer>> dictionaryOfReserveIDs) throws IOException, SQLException
 	{
 		while(true)
 		{
@@ -327,7 +327,7 @@ public class testdriver2 {
 				int pid = available.displayAndSelectPidAvialable(THID, con.stmt, con.con);
 				if(pid > 0)
 				{
-					dictionaryOfReserveIDs.put(THID, pid);
+					dictionaryOfReserveIDs.add(new AbstractMap.SimpleEntry(THID, pid));
 				}
 			}
 			
@@ -360,15 +360,15 @@ public class testdriver2 {
 		}
 	}
 
-	private static void logoutSelection(String login, Map<Integer, Integer> dictionaryOfReserveIDs, Map<Integer, Integer> dictionaryOfVisitIDs, BufferedReader in, Connector con) throws IOException, SQLException
+	private static void logoutSelection(String login, List<Map.Entry<Integer, Integer>> dictionaryOfReserveIDs, List<Map.Entry<Integer, Integer>> dictionaryOfVisitIDs, BufferedReader in, Connector con) throws IOException, SQLException
 	{
 		if(dictionaryOfReserveIDs.size() > 0)
 		{
 			Available available = new Available();
-			for (Map.Entry<Integer, Integer> entry : dictionaryOfReserveIDs.entrySet())
+			for (int i = 0; i < dictionaryOfReserveIDs.size(); i++)
 			{
 				//get key is THID get value is pid
-				available.displayReservations(entry.getKey(), entry.getValue(), con.stmt);
+				available.displayReservations(dictionaryOfReserveIDs.get(i).getKey(), dictionaryOfReserveIDs.get(i).getValue(), con.stmt);
 			}
 			
 			String yesOrNo = "";
@@ -381,10 +381,10 @@ public class testdriver2 {
 			Reserve reserve = new Reserve();
 			if(yesOrNo.equals("yes"))
 			{
-				for (Map.Entry<Integer, Integer> entry : dictionaryOfReserveIDs.entrySet())
+				for (int i = 0; i < dictionaryOfReserveIDs.size(); i++)
 				{
 					//get key is THID get value is pid
-					reserve.insertReservation(login, entry.getKey(), entry.getValue(), con.con, con.stmt);
+					reserve.insertReservation(login, dictionaryOfReserveIDs.get(i).getKey(), dictionaryOfReserveIDs.get(i).getValue(), con.con, con.stmt);
 				}
 				System.out.println("Reservations made thank you. \n");
 			}
@@ -393,9 +393,11 @@ public class testdriver2 {
 				System.out.println("Reservations cancelled and cleared. \n");
 			}
 			
-			for (Map.Entry<Integer, Integer> entry : dictionaryOfReserveIDs.entrySet())
+			Period period = new Period();			
+			for (int i = 0; i < dictionaryOfReserveIDs.size(); i++)
 			{
-				available.removeAvailabe(entry.getKey(), entry.getValue(), con.con);
+				available.removeAvailabe(dictionaryOfReserveIDs.get(i).getKey(), dictionaryOfReserveIDs.get(i).getValue(), con.con);
+				//period.
 			}
 		}
 		else if(dictionaryOfVisitIDs.size() > 0)
