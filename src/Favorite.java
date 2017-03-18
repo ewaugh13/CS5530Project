@@ -20,8 +20,14 @@ public class Favorite
 				+ " values (?, ?, ?)";
 		String deleteSQL = "delete from Favorites where login = ?";
 	    PreparedStatement preparedDeleteStmt = conn.prepareStatement(deleteSQL);
-	    preparedDeleteStmt.setString(1, login);
-	    
+	    try
+	    {
+	    	preparedDeleteStmt.setString(1, login);
+	    }
+	    catch(Exception e)
+	    {
+	    	
+	    }
 	    try
 	    {
 	    	preparedDeleteStmt.execute();

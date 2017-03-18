@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.regex.Pattern;
 import java.util.Date;
 
-
 public class Period 
 {
 	public Period(){}

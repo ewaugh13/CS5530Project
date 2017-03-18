@@ -86,7 +86,6 @@ public class User {
 		} 
 		catch (SQLException e) 
 		{
-			System.err.println(e.getMessage());
 			System.out.println("cannot create the user try again with a different login name or make sure that the other information fits the specification \n");
 			return displayUserOptions(preparedStmt, splited);
 		}
@@ -144,39 +143,59 @@ public class User {
 	public boolean loginIntoAccount(String input, Statement stmt)
 	{
 		String[] splited = input.split(",");
-		String sql = "Select * From Users u Where u.login = '" + splited[0] + "' AND u.password = '" + splited[1] + "'";
-		ResultSet rs = null;
-		 	try
-		 	{
-		 		rs = stmt.executeQuery(sql);
-		 		String result = "";
-	   		 	while (rs.next())
+		boolean login = true;
+		if(splited.length < 2)
+		{
+			login = false;
+		}
+		for(int i = 0; i < splited.length; i++)
+		{
+			if(Pattern.matches("\\s*", splited[i]))
+			{
+				login = false;
+			}
+		}
+		if(login)
+		{
+			String sql = "Select * From Users u Where u.login = '" + splited[0] + "' AND u.password = '" + splited[1] + "'";
+			ResultSet rs = null;
+			try
+			{
+				rs = stmt.executeQuery(sql);
+				String result = "";
+				while (rs.next())
 				{
 	   		 		result = rs.getString("login"); 
 				}
-		 		if(result.equals(splited[0]))
-		 		{
-		 			rs.close();
-			 		return true;
-		 		}
-		 		rs.close();
-		 	}
-		 	catch(Exception e)
-		 	{
-		 		System.out.println("cannot execute the query");
-		 	}
-		 	finally
-		 	{
-		 		try
-		 		{
-		 			if (rs!=null && !rs.isClosed())
-		 				rs.close();
-		 		}
-		 		catch(Exception e)
-		 		{
-		 			System.out.println("cannot close resultset");
-		 		}
-		 	}
-		 	return false;
+				if(result.equals(splited[0]))
+				{
+					rs.close();
+					return true;
+				}
+				rs.close();
+			}
+			catch(Exception e)
+			{
+				System.out.println("cannot login check login and password. \n");
+			}
+			finally
+			{
+				try
+				{
+					if (rs!=null && !rs.isClosed())
+						rs.close();
+				}
+				catch(Exception e)
+				{
+					System.out.println("cannot close resultset");
+				}
+			}
+			return false;
+		}
+		else
+		{
+			System.out.println("cannot login check login and password. \n");
+			return false;
+		}
 	}
 }
