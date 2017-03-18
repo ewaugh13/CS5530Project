@@ -83,8 +83,7 @@ public class Rates {
 				System.out.println("Input not in correct format. Please try again. \n");
 			}
 		}
-	}
-	private static void setValues(PreparedStatement preparedStmt, String login, int fid, int rating) throws SQLException, IOException
+	}private static void setValues(PreparedStatement preparedStmt, String login, int fid, int rating) throws SQLException, IOException
 	{
 		try
 		{
@@ -113,4 +112,5 @@ public class Rates {
 			System.out.println("Could not add Feedback. Make sure all of your inputs are correct. \n");
 		}
 	}
+	
 }
