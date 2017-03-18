@@ -27,10 +27,13 @@ public class testdriver2 {
 	public static void displayUserOptions()
 	{
 		System.out.println("1. Reserve a Uotel temorary housing");
-		System.out.println("2. List or update a temporary housing you own. Can also add a period available for your TH.");
+		System.out.println("2. List or update a temporary housing you own. Can also add a period available for your TH");
 		System.out.println("3. Record a place you stayed at");
 		System.out.println("4. Record your favorite place to stay");
-		System.out.println("5. exit Uotel System");
+		System.out.println("5. Record feedback on a temporary house");
+		System.out.println("6. Assess a feedback given");
+		System.out.println("7. Declare a user as trustworthy or not");
+		System.out.println("8. exit Uotel System");
 		System.out.println("please enter your choice:");
 	}
 
@@ -121,7 +124,7 @@ public class testdriver2 {
 				System.out.println("you can enter your address(optional):");
 				while ((address = in.readLine()) == null && address.length() == 0)
 					;
-				System.out.println("are you a temorary house owner(yes or no):");
+				System.out.println("are you a admin(yes or no):");
 				while ((userType = in.readLine()) == null && userType.length() == 0)
 					;
 
@@ -184,7 +187,7 @@ public class testdriver2 {
 			{
 				continue;
 			}
-			if (c < 1 | c > 5)
+			if (c < 1 | c > 8)
 				continue;
 			if (c == 1) // reserving a place
 			{
@@ -194,16 +197,119 @@ public class testdriver2 {
 			{
 				insertOrUpdateTH(in, con, login);
 			}
-			else if(c == 3)
+			else if(c == 3) // record a stay
 			{
 				
 			}
-			else if(c == 4)
+			else if(c == 4) //record a favorite place to stay
 			{
 				Favorite favorite = new Favorite();
-				int selectionID = favorite.selectFavorite(con.stmt);
+				TH th = new TH();
+				int selectionID = th.selectAllTH(con.stmt);
 				
 				favorite.updateFavorite(login, selectionID, con.con, con.stmt);
+			}
+			else if(c == 5) // give feedback
+			{
+				Feedback feedback = new Feedback();
+				TH th = new TH();
+				int selectionID = th.selectAllTH(con.stmt);
+				
+				String feedbackText;
+				String score; // going to need to parse this one when inserting
+
+				System.out.println("give your feedback on the place. Max 140 characters(optional):");
+				while ((feedbackText = in.readLine()) == null && feedbackText.length() == 0)
+					;
+				System.out.println("please enter a score (0 to 10 with 0 being terrible and 10 being excellent):");
+				while ((score = in.readLine()) == null && score.length() == 0)
+					;
+				int scoreInt = Integer.parseInt(score);
+				if(scoreInt > 10 || scoreInt < 0)
+				{
+					System.out.println("Score not in the range specified try again. \n");
+					continue;
+				}
+				String input = selectionID + "," + login + "," + feedbackText + "," + scoreInt;
+				
+				feedback.insertFeedback(input, con.con, con.stmt);
+			}
+			else if(c == 6) // assess feedback
+			{
+				System.out.println("1. Assess feedback based on TH");
+				System.out.println("2. Assess any feedback given");
+				System.out.println("please enter your choice (if not 1 or 2 automatically does 2):");
+				
+				String assessChoice = "";
+				int assessC;
+				while ((assessChoice = in.readLine()) == null && assessChoice.length() == 0)
+					;
+				try 
+				{
+					assessC = Integer.parseInt(assessChoice);
+				} 
+				catch (Exception e) 
+				{
+					assessC = 2;
+				}
+				
+				int selectionFID = 0;
+				if(assessC == 1)
+				{
+					TH th = new TH();
+					int selectionID = th.selectAllTH(con.stmt);
+					
+					Feedback feedback = new Feedback();
+					selectionFID = feedback.selectFidFromTH(selectionID, login, con.stmt);					
+				}
+				else
+				{
+					Feedback feedback = new Feedback();
+					selectionFID = feedback.selectFid(login, con.stmt);
+				}
+				
+				if(selectionFID > 0)
+				{
+					System.out.println("1. What is your score for them with 0 being useless, 1 being useful and 2 being very useful");
+					System.out.println("please enter your choice (if not 0, 1 or 2 automatically does 1):");
+				
+					String ratesInput = "";
+					int ratesC;
+					while ((ratesInput = in.readLine()) == null && ratesInput.length() == 0)
+						;
+					try 
+					{
+						ratesC = Integer.parseInt(assessChoice);
+					} 
+					catch (Exception e) 
+					{
+						ratesC = 1;
+					}
+					String rating = "";
+					if(ratesC == 0)
+					{
+						rating = "useless";
+					}
+					else if(ratesC == 1)
+					{
+						rating = "useful";
+					}
+					else
+					{
+						rating = "very usefu";
+					}
+					Rates rates = new Rates();
+					rates.insertRating(login, selectionFID, rating, con.con, con.stmt);
+				}
+				else
+				{
+					System.out.println("V");
+				}
+				
+			}
+			else if(c == 7)
+			{
+				
 			}
 			else 
 			{
@@ -397,7 +503,6 @@ public class testdriver2 {
 			for (int i = 0; i < dictionaryOfReserveIDs.size(); i++)
 			{
 				available.removeAvailabe(dictionaryOfReserveIDs.get(i).getKey(), dictionaryOfReserveIDs.get(i).getValue(), con.con);
-				//period.
 			}
 		}
 		else if(dictionaryOfVisitIDs.size() > 0)

@@ -6,91 +6,50 @@ public class Rates {
 	
 	public Rates(){}
 	
-	public void insertRating(String login, int fid, int rating, Connection conn, Statement stmt) throws SQLException, IOException
+	public void insertRating(String login, int fid, String rating, Connection conn, Statement stmt) throws SQLException, IOException
 	{
-		String query = " insert into Ratings (login, fid, rating)"
+		String query = " insert into Rates (login, fid, rating)"
 			     + " values (?, ?, ?)";
 		
-		String usersOwnFeedbackChecker = "select login from Feedback where fid = " + fid;
-		
-		String output = "";
-		ResultSet rs = null;
+		//possibly use ==
+
+		String deleteSQL = "delete from Rates where login = ? and fid = ?";
+		PreparedStatement preparedDeleteStmt = conn.prepareStatement(deleteSQL);
+		    
 		try
 		{
-			rs = stmt.executeQuery(usersOwnFeedbackChecker);
-			while (rs.next())
-			{
-				output = rs.getString("login)");
-			}
-			rs.close();
+		preparedDeleteStmt.setString(1, login);
+		preparedDeleteStmt.setInt(2, fid);
 		}
-   		catch(Exception e)
-   		{
-   			
-   		}
-   		finally
-   		{
-   			try
-   			{
-   				if (rs!=null && !rs.isClosed())
-	   		 			rs.close();
-   		 	}
-   		 	catch(Exception e)
-   		 	{
-   		 		System.out.println("cannot close resultset");
-   		 	}
-   		}
-		//possibly use ==
-		if(output.equals(login))
-		{
-			System.out.println("You may not rate your own feedback. Please choose a valid feedback. \n");
+		catch(Exception e)
+		{		
 		}
-		else
+		    
+		try
 		{
+		    preparedDeleteStmt.execute();
+		}	
+		catch(Exception e)
+		{
+		}
 			
-			
-			String deleteSQL = "delete from Rates where login = ? and fid = ?";
-		    PreparedStatement preparedDeleteStmt = conn.prepareStatement(deleteSQL);
-		    
-		    try
-		    {
-		    	preparedDeleteStmt.setString(1, login);
-				preparedDeleteStmt.setInt(2, fid);
-
-		    }
-		    catch(Exception e)
-		    {		
-		    }
-		    
-		    try
-		    {
-		    	preparedDeleteStmt.execute();
-		    }	
-			catch(Exception e)
-			{
-			}
-			
-		    
-			try
-			{
-				
-				PreparedStatement preparedStmt = conn.prepareStatement(query);
-				setValues(preparedStmt, login, fid, rating);
-				
-			}
-			catch(Exception e)
-			{
-				System.out.println("Input not in correct format. Please try again. \n");
-			}
+		PreparedStatement preparedStmt = conn.prepareStatement(query);
+		try
+		{	
+			setValues(preparedStmt, login, fid, rating);		
+		}
+		catch(Exception e)
+		{
+			System.out.println("Input not in correct format. Please try again. \n");
 		}
 	}
-	private static void setValues(PreparedStatement preparedStmt, String login, int fid, int rating) throws SQLException, IOException
+	private static void setValues(PreparedStatement preparedStmt, String login, int fid, String rating) throws SQLException, IOException
 	{
 		try
 		{
 			preparedStmt.setString(1, login);
 			preparedStmt.setInt(2, fid);
-			preparedStmt.setInt(3, rating);
+			preparedStmt.setString(3, rating);
 			
 			exectueStmt(preparedStmt);
 		}

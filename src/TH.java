@@ -185,27 +185,6 @@ public class TH
 		{
 			preparedStmt.execute();
 			System.out.println("TH created with THID " + THID + "\n");
-			
-			String userNeedUpdated = "Select userType From Users Where login = " + splitted[4];
-			String output = "";
-			ResultSet rs = null;
-			rs = stmt.executeQuery(userNeedUpdated);
-			while (rs.next())
-			{
-				output = rs.getString("userType");
-			}
-			if(output.equals("0")) //if 0 then its false and needs to be updated to true only if they insert a TH correctly
-			{
-				PreparedStatement preparedUpdateStmt = conn.prepareStatement("update Users set userType = ? Where login = " + splitted[4]);
-				try
-				{
-					preparedUpdateStmt.setBoolean(1, true);
-					preparedUpdateStmt.execute();
-				}
-				catch(Exception e)
-				{
-				}
-			}
 		}
 		catch (SQLException e)
 		{
@@ -226,4 +205,71 @@ public class TH
 		}
 	}
 
+	public int selectAllTH(Statement stmt) throws SQLException, IOException
+	{
+		String sql = "Select THID, THname From THData";
+		List<Integer> THIDS = new ArrayList<Integer>();
+		
+		String output = "";
+		ResultSet rs = null;
+		rs = stmt.executeQuery(sql);
+		try
+		{
+	   		 	rs=stmt.executeQuery(sql);
+	   		 	while (rs.next())
+				{
+	   		 		THIDS.add(Integer.parseInt(rs.getString("THID")));
+	   		 		output += rs.getString("THID") + ", " + rs.getString("THname") + "\n"; 
+				} 
+	   		 	rs.close();
+   		}
+   		catch(Exception e)
+   		{	
+   		}
+   		finally
+   		{
+   			try
+   			{
+   				if (rs!=null && !rs.isClosed())
+	   		 			rs.close();
+   		 	}
+   		 	catch(Exception e)
+   		 	{
+   		 		System.out.println("cannot close resultset");
+   		 	}
+   		}
+		if(THIDS.size() > 0)
+		{
+			System.out.println("Here are the THID's and names of the temporary houses:");
+			System.out.println(output);
+			System.out.println("Select the THID:");
+		
+			String choice;
+			int c = 0;
+			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		
+			while ((choice = in.readLine()) == null)
+				;
+			try 
+			{
+				c = Integer.parseInt(choice);
+			} 
+			catch (Exception e) 
+			{
+			}
+			if(THIDS.contains(c))
+			{
+				return c; //returns THID
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		else
+		{
+			System.out.println("There are no temporary houses listed. \n");
+			return 0;
+		}
+	}
 }

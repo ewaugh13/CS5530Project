@@ -52,7 +52,6 @@ public class Available
 			catch(Exception e)
 			{
 				System.out.println("Could not create the available time try again. \n");
-				//deleate the pid created
 				per.deletePeriod(pid, conn);
 			}
 		}
@@ -164,7 +163,7 @@ public class Available
    		}
 		if(PIDS.size() > 0)
 		{
-			System.out.println("Here are the pid's of the dates that the house you are looking at are available:");
+			System.out.println("Here are the pid's of the dates that the house you are looking at are available and the cost per night:");
 			System.out.println(output);
 			System.out.println("Select the pid of the time you want to reserve the temporary house:");
 

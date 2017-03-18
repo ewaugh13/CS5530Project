@@ -120,7 +120,6 @@ public class Period
 	{
 		String deleteSQL = "delete from Period where pid = ?";
 	    PreparedStatement preparedDeleteStmt = conn.prepareStatement(deleteSQL);
-	    
 	    try
 	    {
 	    	preparedDeleteStmt.setInt(1, pid);
