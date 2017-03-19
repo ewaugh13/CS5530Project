@@ -1,6 +1,10 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.*;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class Keyword 
@@ -17,9 +21,9 @@ public class Keyword
 		{
 			language = null;
 		}
+
 		String widgetter = "select max(wid) from Keywords";
-		
-		
+
 		String output = "";
 		ResultSet rs = null;
 		try
@@ -29,49 +33,66 @@ public class Keyword
 			{
 				output = rs.getString("max(wid)");
 			}
-			rs.close();
+		}
+   		catch(Exception e)
+   		{	
+   		}
+		if(output == null || output.equals(""))
+		{
+			output = "0";
+		}
+		int wid = Integer.parseInt(output) + 1;
+		
+		output = "";
+		String checker = "Select wid From Keywords Where word = '" + word + "'";
+		ResultSet rs1 = null;
+		try
+		{
+			rs1 = stmt.executeQuery(checker);
+			while (rs1.next())
+			{
+				output = rs1.getString("wid");
+			}
+			rs1.close();
 		}
    		catch(Exception e)
    		{
-   			
+   			System.out.println(e);
    		}
    		finally
    		{
    			try
    			{
-   				if (rs!=null && !rs.isClosed())
-	   		 			rs.close();
+   				if (rs1!=null && !rs1.isClosed())
+   					rs1.close();
    		 	}
    		 	catch(Exception e)
    		 	{
    		 		System.out.println("cannot close resultset");
    		 	}
    		}
-		
 		if(output == null || output.equals(""))
 		{
-			output = "0";
+			String query = " insert into Keywords (wid, word, wlanguage)"
+					+ " values (?, ?, ?)";
+			try
+			{
+				PreparedStatement preparedStmt = conn.prepareStatement(query);
+				if(setValues(preparedStmt, wid, word, language)) //if values are set correctly it returns the wid and if not return 0
+				{
+					return wid;
+				}
+				return 0;	
+			}
+			catch(Exception e)
+			{
+				System.out.println("Word could not be added. Try again. \n");
+				return 0;
+			}
 		}
-		int wid = Integer.parseInt(output) + 1;
-
-		String query = " insert into Keywords (wid, word, wlangauage)"
-				+ " values (?, ?, ?)";
-		
-		
-		try
+		else
 		{
-		PreparedStatement preparedStmt = conn.prepareStatement(query);
-		if(setValues(preparedStmt, wid, word, language)) //if values are set correctly it returns the pid and if not return 0
-		{
-			return wid;
-		}
-			return 0;
-			
-		}
-		catch(Exception e)
-		{
-			System.out.println("Word could not be added. Try again. \n");
-			return 0;
+			return Integer.parseInt(output);
 		}
 	}
 	
@@ -89,7 +110,6 @@ public class Keyword
 			System.out.println("Incorect values please try again. \n");
 			return false;
 		}
-		
 	}
 	
 	private static boolean exectueStmt(PreparedStatement preparedStmt) throws SQLException, IOException
@@ -128,6 +148,76 @@ public class Keyword
 		catch(Exception e)
 		{
 			
+		}
+	}
+
+	public List<Integer> userInput(Connection conn, Statement stmt) throws IOException, NumberFormatException, SQLException, ParseException
+	{
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		int keyWordCounter = 0;
+		System.out.println("You may insert up to 5 keywords about your temporary housing. \n");
+		List<Integer> keyIDS =  new ArrayList<Integer>();
+		while(keyWordCounter < 5)
+		{
+			System.out.println("1. Insert new keyword");
+			System.out.println("2. Finish adding keywords");
+			System.out.println("please make a selection(if not 1 or 2 will automatically be 2):");
+			
+			String choice = "";
+			int c = 0;
+			
+			while ((choice = in.readLine()) == null && choice.length() == 0)
+				;
+			try 
+			{
+				c = Integer.parseInt(choice);
+			} 
+			catch (Exception e) 
+			{
+				c = 2;
+			}
+			
+			if(c == 1)
+			{
+				String keyword;
+				String language;
+				
+				System.out.println("please enter your key word(max 20 characters):");
+				while ((keyword = in.readLine()) == null && keyword.length() == 0)
+					;
+				System.out.println("please enter the language of your keyword(optional):");
+				while ((language = in.readLine()) == null && language.length() == 0)
+					;
+				keyIDS.add(insertKeyword(keyword, language, conn, stmt));
+			}
+			else
+			{
+				break;
+			}
+			keyWordCounter++;
+		}
+		return keyIDS;
+	}
+
+	public void insertIntoHasKeys(int THID, int wid, Connection conn, Statement stmt) throws SQLException
+	{
+		String query = " insert into HasKeywords (THID, wid)"
+				+ " values (?, ?)";
+		PreparedStatement preparedStmt = conn.prepareStatement(query);
+		try
+		{
+			preparedStmt.setInt(1, THID);
+			preparedStmt.setInt(2, wid);
+		}
+		catch(Exception e)
+		{
+		}
+		try
+		{
+			preparedStmt.execute();
+		}
+		catch(Exception e)
+		{
 		}
 	}
 }
