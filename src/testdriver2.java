@@ -330,7 +330,7 @@ public class testdriver2 {
 			System.out.println("1. Create a temporary housing");
 			System.out.println("2. Update a temporary housing");
 			System.out.println("3. Create time available for your temporary housing");
-			System.out.println("4. View you listed temporary houses");
+			System.out.println("4. View your listed temporary houses");
 			System.out.println("5. Go back to user options");
 			System.out.println("please enter your choice:");
 			
@@ -348,6 +348,9 @@ public class testdriver2 {
 				continue;		
 		
 			String address; 
+			String city;
+			String state;
+			String zip;
 			String THName;
 			String yearBuilt;
 			String category;
@@ -357,6 +360,15 @@ public class testdriver2 {
 			{
 				System.out.println("please enter a address:");
 				while ((address = in.readLine()) == null && address.length() == 0)
+					;
+				System.out.println("please enter a city:");
+				while ((city = in.readLine()) == null && city.length() == 0)
+					;
+				System.out.println("please enter a state:");
+				while ((state = in.readLine()) == null && state.length() == 0)
+					;
+				System.out.println("please enter a zip(optional max 5 numbers i.e 80122):");
+				while ((zip = in.readLine()) == null && zip.length() == 0)
 					;
 				System.out.println("please enter your THName:");
 				while ((THName = in.readLine()) == null && THName.length() == 0)
@@ -368,7 +380,7 @@ public class testdriver2 {
 				while ((category = in.readLine()) == null && category.length() == 0)
 					;
 				
-				String input = address + "," + THName + "," + yearBuilt + "," + category + "," + login;
+				String input = address + "," + city + "," + state + "," + zip + "," + THName + "," + yearBuilt + "," + category + "," + login;
 				Thdata.insertTH(input, con.con, con.stmt);
 			}
 			else if(c == 2)
@@ -380,6 +392,15 @@ public class testdriver2 {
 					System.out.println("please enter a address:");
 					while ((address = in.readLine()) == null && address.length() == 0)
 						;
+					System.out.println("please enter a city:");
+					while ((city = in.readLine()) == null && city.length() == 0)
+						;
+					System.out.println("please enter a state:");
+					while ((state = in.readLine()) == null && state.length() == 0)
+						;
+					System.out.println("please enter a zip(optional max 5 numbers i.e 80122):");
+					while ((zip = in.readLine()) == null && zip.length() == 0)
+						;
 					System.out.println("please enter your THName:");
 					while ((THName = in.readLine()) == null && THName.length() == 0)
 						;
@@ -390,7 +411,7 @@ public class testdriver2 {
 					while ((category = in.readLine()) == null && category.length() == 0)
 						;
 				
-					String input = address + "," + THName + "," + yearBuilt + "," + category;
+					String input = address + "," + city + "," + state + "," + zip + "," + THName + "," + yearBuilt + "," + category;
 					Thdata.updateTH(con.con, input, THID);
 				}
 			}

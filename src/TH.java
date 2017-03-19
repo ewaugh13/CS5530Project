@@ -2,6 +2,7 @@
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.*;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -11,8 +12,11 @@ public class TH
 {
 	public TH() {}
 	
-	public void insertTH(String input, Connection conn, Statement stmt) throws SQLException, IOException
+	public void insertTH(String input, Connection conn, Statement stmt) throws SQLException, IOException, NumberFormatException, ParseException
 	{
+		Keyword key = new Keyword();
+		List<Integer> keyIDS = key.userInput(conn, stmt);
+		
 		String[] splitted = input.split(",");
 		for(int i = 0; i < splitted.length; i++)
 		{
@@ -22,8 +26,8 @@ public class TH
 			}
 		}
 		
-		String query = " insert into THData (THID, url, address, THname, yearBuilt, category, login)"
-				     + " values (?, ?, ?, ?, ?, ?, ?)";
+		String query = " insert into THData (THID, url, address, city, state, zip, THname, yearBuilt, category, login)"
+				     + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		String THIDgetter = "select max(THID) from THData";
 		
 		
@@ -34,7 +38,7 @@ public class TH
 		{
 			output = rs.getString("max(THID)");
 		}
-		if(output == "")
+		if(output == "" || output == null)
 		{
 			output = "0";
 		}
@@ -43,9 +47,10 @@ public class TH
 		int THID = Integer.parseInt(output) + 1;
 		String URL = "https://uotel.com/temporary-housing/" + THID;
 		
+		
 		// create the mysql insert preparedstatement
 		PreparedStatement preparedStmt = conn.prepareStatement(query);
-		setValues(preparedStmt, stmt, conn, splitted, THID, URL); //sets the values and calls execute
+		setValues(preparedStmt, stmt, conn, keyIDS, splitted, THID, URL); //sets the values and calls execute
 	}
 
 	public int selectTH(Statement stmt, String login, String operation) throws SQLException, IOException
@@ -135,7 +140,7 @@ public class TH
 		}
 			
 		PreparedStatement preparedStmt = conn.prepareStatement(
-			      "update THData set address = ?, THname = ?, yearBuilt = ?, category = ? Where THID = " + THID);
+			      "update THData set address = ?, city = ?, state = ?, zip = ?, THname = ?, yearBuilt = ?, category = ? Where THID = " + THID);
 		updateValues(preparedStmt, splitted);
 		
 	}
@@ -145,9 +150,13 @@ public class TH
 		try
 		{
 			preparedStmt.setString(1, splitted[0]); // address
-			preparedStmt.setString(2, splitted[1]); // th name
-			preparedStmt.setInt(3, Integer.parseInt(splitted[2])); //year built
-			preparedStmt.setString(4, splitted[3]); //category
+			preparedStmt.setString(2, splitted[1]); //city
+			preparedStmt.setString(3, splitted[2]); //state
+			preparedStmt.setString(4, splitted[3]); //zip
+
+			preparedStmt.setString(5, splitted[4]); // th name
+			preparedStmt.setInt(6, Integer.parseInt(splitted[5])); //year built
+			preparedStmt.setString(7, splitted[6]); //category
 			
 			updateStmt(preparedStmt);
 		}
@@ -157,38 +166,66 @@ public class TH
 		}
 	}
 
-	private static void setValues(PreparedStatement preparedStmt, Statement stmt, Connection conn, String[] splitted, int THID, String URL) throws SQLException, IOException
+	private static void setValues(PreparedStatement preparedStmt, Statement stmt, Connection conn, List<Integer> keyIDS, String[] splitted, int THID, String URL) throws SQLException, IOException
 	{
 		try
 		{
 			preparedStmt.setInt(1, THID);
 			preparedStmt.setString(2, URL);
 			preparedStmt.setString(3, splitted[0]); //address
-			preparedStmt.setString(4, splitted[1]); //THname
-			preparedStmt.setInt(5, Integer.parseInt(splitted[2])); //yearBuilt
-			preparedStmt.setString(6, splitted[3]); //category
-			preparedStmt.setString(7, splitted[4]); //login
+			preparedStmt.setString(4, splitted[1]); //city
+			preparedStmt.setString(5, splitted[2]); //state
+			preparedStmt.setString(6, splitted[3]); //zip
+			preparedStmt.setString(7, splitted[4]); //THname
+			preparedStmt.setInt(8, Integer.parseInt(splitted[5])); //yearBuilt
+			preparedStmt.setString(9, splitted[6]); //category
+			preparedStmt.setString(10, splitted[7]); //login
 			
-			exectueStmt(preparedStmt, splitted, THID, stmt, conn);
+			exectueStmt(preparedStmt, keyIDS, splitted, THID, stmt, conn);
 
 		}
 		catch(Exception e)
 		{
-			System.out.println("an inputed value did not match specifications of what is needed. try again");
+			Keyword key = new Keyword();
+			for(int i = 0; i < keyIDS.size(); i++)
+			{
+				if(keyIDS.get(i) > 0)
+				{
+					key.deleteWord(keyIDS.get(i), conn);
+				}
+			}
+			System.out.println("an inputed value did not match specifications of what is needed, and keywords deleted. Please try again. \n");
 		}
 		
 	}
 
-	private static void exectueStmt(PreparedStatement preparedStmt, String[] splitted, int THID, Statement stmt, Connection conn) throws SQLException, IOException
+	private static void exectueStmt(PreparedStatement preparedStmt, List<Integer> keyIDS, String[] splitted, int THID, Statement stmt, Connection conn) throws SQLException, IOException
 	{
+		Keyword key = new Keyword();
 		try
 		{
 			preparedStmt.execute();
 			System.out.println("TH created with THID " + THID + "\n");
+			
+			for(int i = 0; i < keyIDS.size(); i++)
+			{
+				if(keyIDS.get(i) > 0)
+				{
+					key.insertIntoHasKeys(THID, keyIDS.get(i), conn, stmt);
+				}
+			}
 		}
 		catch (SQLException e)
 		{
-			System.out.println("Can not create the TH. Make sure all of your values are correct.");
+			System.out.println(e);
+			for(int i = 0; i < keyIDS.size(); i++)
+			{
+				if(keyIDS.get(i) > 0)
+				{
+					key.deleteWord(keyIDS.get(i), conn);
+				}
+			}
+			System.out.println("Can not create the TH. Make sure all of your values are correct. (Your keywords were also removed). \n");
 		}
 	}
 	
@@ -304,5 +341,7 @@ public class TH
    		 		System.out.println("cannot close resultset");
    		 	}
    		}
+		System.out.println("Here are the temporary houses that you have listed (if blank you have listed none, list if you want to)");
+		System.out.println(output);
 	}
 }
