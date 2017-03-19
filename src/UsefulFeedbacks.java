@@ -13,9 +13,10 @@ public class UsefulFeedbacks {
 	
 	public UsefulFeedbacks(){}
 	
-	public static void getUsefulFeedbacks(String THID, Connection conn, Statement stmt) throws SQLException, IOException
+	public static void getUsefulFeedbacks(int THID, int numFeedbcks, Connection conn, Statement stmt) throws SQLException, IOException
 	{
-		
+		String avgFeedbackScores = "select avg(score) from Feedback where THID = " + THID;
+		String rankedFeedbacks = 
 	}
 	
 }
