@@ -13,15 +13,18 @@ public class Keyword
 		{
 			word = null;
 		}
-		
-		String pidgetter = "select max(wid) from Keywords";
+		if(Pattern.matches("\\s*", language))
+		{
+			language = null;
+		}
+		String widgetter = "select max(wid) from Keywords";
 		
 		
 		String output = "";
 		ResultSet rs = null;
 		try
 		{
-			rs = stmt.executeQuery(pidgetter);
+			rs = stmt.executeQuery(widgetter);
 			while (rs.next())
 			{
 				output = rs.getString("max(wid)");
