@@ -1,5 +1,9 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class Reserve 
@@ -82,21 +86,197 @@ public class Reserve
 		}
 	}
 
-	public int displayAndSelectReservationTHID(Statement stmt, Connection conn)
+	public int displayAndSelectReservationTHID(String login, Statement stmt, Connection conn) throws IOException
 	{
+		String query = "Select t.THID, t.THname From THData t, Reserve r Where r.THID = t.THID AND r.login = '" + login + "'";
+		String output = "";
+		List<Integer> THIDS = new ArrayList<Integer>();
+		ResultSet rs=null;
+		try
+		{
+	   		 	rs=stmt.executeQuery(query);
+	   		 	while (rs.next())
+				{
+	   		 		if(!THIDS.contains(Integer.parseInt(rs.getString("THID"))))
+	   		 		{
+	   		 			THIDS.add(Integer.parseInt(rs.getString("THID")));
+	   		 			output += rs.getString("THID") + ", " + rs.getString("THname") + "\n"; 
+	   		 		}
+				} 
+	   		 	rs.close();
+   		}
+   		catch(Exception e)
+   		{
+   			
+   		}
+   		finally
+   		{
+   			try
+   			{
+   				if (rs!=null && !rs.isClosed())
+	   		 			rs.close();
+   		 	}
+   		 	catch(Exception e)
+   		 	{
+   		 		System.out.println("cannot close resultset");
+   		 	}
+   		}
+		if(THIDS.size() > 0)
+		{
+			System.out.println("Here are the THID's of the temporary houses you that you reserved and the names of them:");
+			System.out.println(output);
+			System.out.println("Select the THID of the house you want to record a stay at:");
+
+			String choice;
+			int c = 0;
+			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		
-		return 0;
+			while ((choice = in.readLine()) == null)
+				;
+			try 
+			{
+				c = Integer.parseInt(choice);
+			} 
+			catch (Exception e) 
+			{
+			}
+			if(THIDS.contains(c))
+			{
+				return c; //returns THID
+			}
+			else
+			{
+				System.out.println("Wrong THID. Please select a reserved TH by THID next time. \n");
+				return 0;
+			}
+		}
+		else
+		{
+			System.out.println("There are no temporary houses that you reserved. You may reserve one. \n");
+			return 0;
+		}
 	}
 	
-	public int displayAndSelectPidAvialable(int THID, Statement stmt, Connection conn)
+	public int displayAndSelectPidReservation(int THID, Statement stmt, Connection conn) throws IOException
 	{
+		String query = "Select p.pid, p.fromDate, p.toDate, r.cost From Reserve r, Period p Where r.THID = " + THID + " AND r.pid = p.pid";
+		String output = "";
+		ResultSet rs=null;
+		List<Integer> PIDS = new ArrayList<Integer>();
+		try
+		{
+	   		 	rs=stmt.executeQuery(query);
+	   		 	while (rs.next())
+				{
+	   		 		PIDS.add(Integer.parseInt(rs.getString("pid")));
+	   		 		output += rs.getString("pid") + ", " + rs.getString("fromDate") + ", " + rs.getString("toDate") + ", total cost $" + rs.getString("cost") + "\n"; 
+				} 
+	   		 	rs.close();
+   		}
+   		catch(Exception e)
+   		{
+   			
+   		}
+   		finally
+   		{
+   			try
+   			{
+   				if (rs!=null && !rs.isClosed())
+	   		 			rs.close();
+   		 	}
+   		 	catch(Exception e)
+   		 	{
+   		 		System.out.println("cannot close resultset");
+   		 	}
+   		}
+		if(PIDS.size() > 0)
+		{
+			System.out.println("Here are the pid's of the dates that the house you are looking at that you reserved and the total cost.");
+			System.out.println(output);
+			System.out.println("Select the pid of the time you want to record a stay at the temporary house:");
+
 		
-		return 0;
+			String choice;
+			int c = 0;
+			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		
+			while ((choice = in.readLine()) == null)
+				;
+			try 
+			{
+				c = Integer.parseInt(choice);
+			} 
+			catch (Exception e) 
+			{
+			}
+			if(PIDS.contains(c))
+			{
+				return c; //returns pid
+			}
+			else
+			{
+				System.out.println("Wrong pid. Please select a reserved period by pid next time. \n");
+				return 0;
+			}
+		}
+		else
+		{
+			return 0;
+		}
 	}
-	
-	public boolean visitSelectedAvailable(int THID, int pid, Statement stmt, Connection conn)
+
+	public void displayVisits(int THID, int pid, Statement stmt)
 	{
-		// return true if there selection made they have already reserved if not tell them that they havn't reserved the selection that they made
-		return true;
+		String sql = "Select t.THname, p.fromDate, p.toDate, r.cost From Period p, THData t, Reserve r Where p.pid = " + pid + " AND t.THID = " + THID + " AND r.THID = " + THID + " AND r.pid = " + pid;
+		String output = "";
+		ResultSet rs = null;
+		try
+		{
+	   		 	rs=stmt.executeQuery(sql);
+	   		 	while (rs.next())
+				{
+	   		 		output = rs.getString("THname") + ", " + rs.getString("fromDate") + ", " + rs.getString("toDate") + ", total cost $" + rs.getString("cost"); 
+				} 
+	   		 	rs.close();
+   		}
+   		catch(Exception e)
+   		{
+   			
+   		}
+   		finally
+   		{
+   			try
+   			{
+   				if (rs!=null && !rs.isClosed())
+	   		 			rs.close();
+   		 	}
+   		 	catch(Exception e)
+   		 	{
+   		 		System.out.println("cannot close resultset");
+   		 	}
+   		}
+		System.out.println(output);
+	}
+
+	public void removeReservation(int THID, int pid, Connection conn) throws SQLException
+	{
+		String deleteSQL = "delete from Reserve where THID = ? AND pid = ?";
+	    PreparedStatement preparedDeleteStmt = conn.prepareStatement(deleteSQL);
+	    try
+	    {
+	    	preparedDeleteStmt.setInt(1, THID);
+	    	preparedDeleteStmt.setInt(2, pid);
+	    }
+	    catch(Exception e)
+	    {	
+	    }
+	    try
+	    {
+	    	preparedDeleteStmt.execute();
+	    }
+		
+		catch(Exception e)
+		{
+		}
 	}
 }

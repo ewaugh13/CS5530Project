@@ -199,7 +199,7 @@ public class testdriver2 {
 			}
 			else if(c == 3) // record a stay
 			{
-				
+				visitTH(in, con, login, dictionaryOfVisitIDs);
 			}
 			else if(c == 4) //record a favorite place to stay
 			{
@@ -236,71 +236,7 @@ public class testdriver2 {
 			}
 			else if(c == 6) // assess feedback
 			{
-				System.out.println("1. Assess feedback based on TH");
-				System.out.println("2. Assess any feedback given");
-				System.out.println("please enter your choice (if not 1 or 2 automatically does 2):");
-				
-				String assessChoice = "";
-				int assessC;
-				while ((assessChoice = in.readLine()) == null && assessChoice.length() == 0)
-					;
-				try 
-				{
-					assessC = Integer.parseInt(assessChoice);
-				} 
-				catch (Exception e) 
-				{
-					assessC = 2;
-				}
-				
-				int selectionFID = 0;
-				if(assessC == 1)
-				{
-					TH th = new TH();
-					int selectionID = th.selectAllTH(con.stmt);
-					
-					Feedback feedback = new Feedback();
-					selectionFID = feedback.selectFidFromTH(selectionID, login, con.stmt);					
-				}
-				else
-				{
-					Feedback feedback = new Feedback();
-					selectionFID = feedback.selectFid(login, con.stmt);
-				}
-				
-				if(selectionFID > 0)
-				{
-					System.out.println("1. What is your score for them with 0 being useless, 1 being useful and 2 being very useful");
-					System.out.println("please enter your choice (if not 0, 1 or 2 automatically does 1):");
-				
-					String ratesInput = "";
-					int ratesC;
-					while ((ratesInput = in.readLine()) == null && ratesInput.length() == 0)
-						;
-					try 
-					{
-						ratesC = Integer.parseInt(assessChoice);
-					} 
-					catch (Exception e) 
-					{
-						ratesC = 1;
-					}
-					String rating = "";
-					if(ratesC == 0)
-					{
-						rating = "useless";
-					}
-					else if(ratesC == 1)
-					{
-						rating = "useful";
-					}
-					else
-					{
-						rating = "very useful";
-					}
-					Rates rates = new Rates();
-					rates.insertRating(login, selectionFID, rating, con.con, con.stmt);
-				}
+				assessFeedback(in, con, login);
 			}
 			else if(c == 7)
 			{
@@ -494,16 +430,13 @@ public class testdriver2 {
 		{
 			Reserve reserve = new Reserve();
 			
-			int THID = reserve.displayAndSelectReservationTHID(con.stmt, con.con);
+			int THID = reserve.displayAndSelectReservationTHID(login, con.stmt, con.con);
 			if(THID > 0)
 			{
-				int pid = reserve.displayAndSelectPidAvialable(THID, con.stmt, con.con);
+				int pid = reserve.displayAndSelectPidReservation(THID, con.stmt, con.con);
 				if(pid > 0)
 				{
-					if(reserve.visitSelectedAvailable(THID, pid, con.stmt, con.con))
-					{
-						dictionaryOfVisitIDs.add(new AbstractMap.SimpleEntry(THID, pid));
-					}
+					dictionaryOfVisitIDs.add(new AbstractMap.SimpleEntry(THID, pid));
 				}
 			}
 			
@@ -563,23 +496,126 @@ public class testdriver2 {
 					reserve.insertReservation(login, dictionaryOfReserveIDs.get(i).getKey(), dictionaryOfReserveIDs.get(i).getValue(), con.con, con.stmt);
 				}
 				System.out.println("Reservations made thank you. \n");
+				
+				for (int i = 0; i < dictionaryOfReserveIDs.size(); i++)
+				{
+					// removes from available once you reserve them
+					available.removeAvailabe(dictionaryOfReserveIDs.get(i).getKey(), dictionaryOfReserveIDs.get(i).getValue(), con.con);
+				}
 			}
 			else
 			{
 				System.out.println("Reservations cancelled and cleared. \n");
 			}
-			
-			Period period = new Period();			
-			for (int i = 0; i < dictionaryOfReserveIDs.size(); i++)
-			{
-				available.removeAvailabe(dictionaryOfReserveIDs.get(i).getKey(), dictionaryOfReserveIDs.get(i).getValue(), con.con);
-			}
 		}
 		else if(dictionaryOfVisitIDs.size() > 0)
 		{
-			// do the stuff here
+			Reserve reserve = new Reserve();
+			for (int i = 0; i < dictionaryOfVisitIDs.size(); i++)
+			{
+				//get key is THID get value is pid
+				reserve.displayVisits(dictionaryOfVisitIDs.get(i).getKey(), dictionaryOfVisitIDs.get(i).getValue(), con.stmt);
+			}
+			
+			String yesOrNo = "";
+			System.out.println("Would you like to confirm these visits?. \n");
+			
+			System.out.println("please enter yes or no (a choice that isn't yes will automatically be no):");
+			while ((yesOrNo = in.readLine()) == null && yesOrNo.length() == 0)
+				;
+			
+			Visit visit = new Visit();
+			if(yesOrNo.equals("yes"))
+			{
+				for (int i = 0; i < dictionaryOfVisitIDs.size(); i++)
+				{
+					//get key is THID get value is pid
+					visit.insertVisit(login, dictionaryOfVisitIDs.get(i).getKey(), dictionaryOfVisitIDs.get(i).getValue(), con.con, con.stmt);
+				}
+				System.out.println("Visits recorded thank you. \n");
+				
+				for (int i = 0; i < dictionaryOfVisitIDs.size(); i++)
+				{
+					// removes from available once you reserve them
+					reserve.removeReservation(dictionaryOfVisitIDs.get(i).getKey(), dictionaryOfVisitIDs.get(i).getValue(), con.con);
+				}
+			}
+			else
+			{
+				System.out.println("Visits cancelled and cleared. \n");
+			}
 		}
+		
 		dictionaryOfReserveIDs.clear();
 		dictionaryOfVisitIDs.clear();
+	}
+
+	private static void assessFeedback(BufferedReader in, Connector con, String login) throws SQLException, IOException
+	{
+		System.out.println("1. Assess feedback based on TH");
+		System.out.println("2. Assess any feedback given");
+		System.out.println("please enter your choice (if not 1 or 2 automatically does 2):");
+		
+		String assessChoice = "";
+		int assessC;
+		while ((assessChoice = in.readLine()) == null && assessChoice.length() == 0)
+			;
+		try 
+		{
+			assessC = Integer.parseInt(assessChoice);
+		} 
+		catch (Exception e) 
+		{
+			assessC = 2;
+		}
+		
+		int selectionFID = 0;
+		if(assessC == 1)
+		{
+			TH th = new TH();
+			int selectionID = th.selectAllTH(con.stmt);
+			
+			Feedback feedback = new Feedback();
+			selectionFID = feedback.selectFidFromTH(selectionID, login, con.stmt);					
+		}
+		else
+		{
+			Feedback feedback = new Feedback();
+			selectionFID = feedback.selectFid(login, con.stmt);
+		}
+		
+		if(selectionFID > 0)
+		{
+			System.out.println("1. What is your score for them with 0 being useless, 1 being useful and 2 being very useful");
+			System.out.println("please enter your choice (if not 0, 1 or 2 automatically does 1):");
+		
+			String ratesInput = "";
+			int ratesC;
+			while ((ratesInput = in.readLine()) == null && ratesInput.length() == 0)
+				;
+			try 
+			{
+				ratesC = Integer.parseInt(assessChoice);
+			} 
+			catch (Exception e) 
+			{
+				ratesC = 1;
+			}
+			String rating = "";
+			if(ratesC == 0)
+			{
+				rating = "useless";
+			}
+			else if(ratesC == 1)
+			{
+				rating = "useful";
+			}
+			else
+			{
+				rating = "very useful";
+			}
+			Rates rates = new Rates();
+			rates.insertRating(login, selectionFID, rating, con.con, con.stmt);
+		}
 	}
 }
