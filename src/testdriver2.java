@@ -296,16 +296,11 @@ public class testdriver2 {
 					}
 					else
 					{
-						rating = "very usefu";
+						rating = "very useful";
 					}
 					Rates rates = new Rates();
 					rates.insertRating(login, selectionFID, rating, con.con, con.stmt);
 				}
-				else
-				{
-					System.out.println("V");
-				}
-				
 			}
 			else if(c == 7)
 			{
@@ -493,6 +488,54 @@ public class testdriver2 {
 		}
 	}
 
+	private static List<Map.Entry<Integer, Integer>> visitTH(BufferedReader in, Connector con, String login, List<Map.Entry<Integer, Integer>> dictionaryOfVisitIDs) throws IOException, SQLException
+	{
+		while(true)
+		{
+			Reserve reserve = new Reserve();
+			
+			int THID = reserve.displayAndSelectReservationTHID(con.stmt, con.con);
+			if(THID > 0)
+			{
+				int pid = reserve.displayAndSelectPidAvialable(THID, con.stmt, con.con);
+				if(pid > 0)
+				{
+					if(reserve.visitSelectedAvailable(THID, pid, con.stmt, con.con))
+					{
+						dictionaryOfVisitIDs.add(new AbstractMap.SimpleEntry(THID, pid));
+					}
+				}
+			}
+			
+			String choice;
+			int c;
+
+			System.out.println("1. Record visit to another temorary housing.");
+			System.out.println("2. Return to previous screen.");
+			System.out.println("please enter your choice (a choice that isn't 1 or 2 will automatically be choice 2): \n");
+				
+			while ((choice = in.readLine()) == null && choice.length() == 0)
+				;
+			try 
+			{
+				c = Integer.parseInt(choice);
+			} 
+			catch (Exception e) 
+			{
+				c = 2;
+				continue;
+			}
+			if (c == 1) // reserve another place
+			{
+				continue;
+			} 
+			else // return to menu
+			{
+				return dictionaryOfVisitIDs;
+			}
+		}
+	}
+	
 	private static void logoutSelection(String login, List<Map.Entry<Integer, Integer>> dictionaryOfReserveIDs, List<Map.Entry<Integer, Integer>> dictionaryOfVisitIDs, BufferedReader in, Connector con) throws IOException, SQLException
 	{
 		if(dictionaryOfReserveIDs.size() > 0)

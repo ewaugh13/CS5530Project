@@ -81,4 +81,22 @@ public class Reserve
 		{
 		}
 	}
+
+	public int displayAndSelectReservationTHID(Statement stmt, Connection conn)
+	{
+		
+		return 0;
+	}
+	
+	public int displayAndSelectPidAvialable(int THID, Statement stmt, Connection conn)
+	{
+		
+		return 0;
+	}
+	
+	public boolean visitSelectedAvailable(int THID, int pid, Statement stmt, Connection conn)
+	{
+		// return true if there selection made they have already reserved if not tell them that they havn't reserved the selection that they made
+		return true;
+	}
 }
