@@ -52,7 +52,6 @@ public class Available
 			catch(Exception e)
 			{
 				System.out.println("Could not create the available time try again. \n");
-				//deleate the pid created
 				per.deletePeriod(pid, conn);
 			}
 		}
@@ -132,7 +131,7 @@ public class Available
 
 	public int displayAndSelectPidAvialable(int THID, Statement stmt, Connection conn) throws IOException
 	{
-		String query = "Select p.pid, p.fromDate, p.toDate From Available a, Period p Where a.THID = " + THID + " AND a.pid = p.pid";
+		String query = "Select p.pid, p.fromDate, p.toDate, a.pricePerNight From Available a, Period p Where a.THID = " + THID + " AND a.pid = p.pid";
 		String output = "";
 		ResultSet rs=null;
 		List<Integer> PIDS = new ArrayList<Integer>();
@@ -142,7 +141,7 @@ public class Available
 	   		 	while (rs.next())
 				{
 	   		 		PIDS.add(Integer.parseInt(rs.getString("pid")));
-	   		 		output += rs.getString("pid") + ", " + rs.getString("fromDate") + ", " + rs.getString("toDate") + "\n"; 
+	   		 		output += rs.getString("pid") + ", " + rs.getString("fromDate") + ", " + rs.getString("toDate") + ", price per night $" + rs.getString("pricePerNight") + "\n"; 
 				} 
 	   		 	rs.close();
    		}
@@ -164,7 +163,7 @@ public class Available
    		}
 		if(PIDS.size() > 0)
 		{
-			System.out.println("Here are the pid's of the dates that the house you are looking at are available:");
+			System.out.println("Here are the pid's of the dates that the house you are looking at are available and the cost per night:");
 			System.out.println(output);
 			System.out.println("Select the pid of the time you want to reserve the temporary house:");
 
@@ -201,7 +200,7 @@ public class Available
 
 	public void displayReservations(int THID, int pid, Statement stmt)
 	{
-		String sql = "Select THname, fromDate, toDate From Period, THData Where pid = " + pid + " AND THID = " + THID;
+		String sql = "Select t.THname, p.fromDate, p.toDate, a.pricePerNight From Period p, THData t, Available a Where p.pid = " + pid + " AND t.THID = " + THID + " AND a.THID = " + THID + " AND a.pid = " + pid;
 		String output = "";
 		ResultSet rs = null;
 		try
@@ -209,7 +208,7 @@ public class Available
 	   		 	rs=stmt.executeQuery(sql);
 	   		 	while (rs.next())
 				{
-	   		 		output = rs.getString("THname") + ", " + rs.getString("fromDate") + ", " + rs.getString("toDate"); 
+	   		 		output = rs.getString("THname") + ", " + rs.getString("fromDate") + ", " + rs.getString("toDate") + ", per night $" + rs.getString("pricePerNight"); 
 				} 
 	   		 	rs.close();
    		}

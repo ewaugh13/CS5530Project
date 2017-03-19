@@ -22,8 +22,8 @@ public class TH
 			}
 		}
 		
-		String query = " insert into THData (THID, url, address, THname, yearBuilt, category, login)"
-				     + " values (?, ?, ?, ?, ?, ?, ?)";
+		String query = " insert into THData (THID, url, address, city, state, zip, THname, yearBuilt, category, login)"
+				     + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		String THIDgetter = "select max(THID) from THData";
 		
 		
@@ -145,9 +145,13 @@ public class TH
 		try
 		{
 			preparedStmt.setString(1, splitted[0]); // address
-			preparedStmt.setString(2, splitted[1]); // th name
-			preparedStmt.setInt(3, Integer.parseInt(splitted[2])); //year built
-			preparedStmt.setString(4, splitted[3]); //category
+			preparedStmt.setString(2, splitted[1]); // address
+			preparedStmt.setString(3, splitted[2]); // address
+			preparedStmt.setString(4, splitted[3]); // address
+
+			preparedStmt.setString(5, splitted[4]); // th name
+			preparedStmt.setInt(6, Integer.parseInt(splitted[5])); //year built
+			preparedStmt.setString(7, splitted[6]); //category
 			
 			updateStmt(preparedStmt);
 		}
@@ -164,10 +168,14 @@ public class TH
 			preparedStmt.setInt(1, THID);
 			preparedStmt.setString(2, URL);
 			preparedStmt.setString(3, splitted[0]); //address
-			preparedStmt.setString(4, splitted[1]); //THname
-			preparedStmt.setInt(5, Integer.parseInt(splitted[2])); //yearBuilt
-			preparedStmt.setString(6, splitted[3]); //category
-			preparedStmt.setString(7, splitted[4]); //login
+			preparedStmt.setString(4, splitted[1]); //city
+			preparedStmt.setString(5, splitted[2]); //state
+			preparedStmt.setString(6, splitted[3]); //zip
+
+			preparedStmt.setString(7, splitted[4]); //THname
+			preparedStmt.setInt(8, Integer.parseInt(splitted[5])); //yearBuilt
+			preparedStmt.setString(9, splitted[6]); //category
+			preparedStmt.setString(10, splitted[7]); //login
 			
 			exectueStmt(preparedStmt, splitted, THID, stmt, conn);
 
@@ -185,27 +193,6 @@ public class TH
 		{
 			preparedStmt.execute();
 			System.out.println("TH created with THID " + THID + "\n");
-			
-			String userNeedUpdated = "Select userType From Users Where login = " + splitted[4];
-			String output = "";
-			ResultSet rs = null;
-			rs = stmt.executeQuery(userNeedUpdated);
-			while (rs.next())
-			{
-				output = rs.getString("userType");
-			}
-			if(output.equals("0")) //if 0 then its false and needs to be updated to true only if they insert a TH correctly
-			{
-				PreparedStatement preparedUpdateStmt = conn.prepareStatement("update Users set userType = ? Where login = " + splitted[4]);
-				try
-				{
-					preparedUpdateStmt.setBoolean(1, true);
-					preparedUpdateStmt.execute();
-				}
-				catch(Exception e)
-				{
-				}
-			}
 		}
 		catch (SQLException e)
 		{
@@ -226,4 +213,71 @@ public class TH
 		}
 	}
 
+	public int selectAllTH(Statement stmt) throws SQLException, IOException
+	{
+		String sql = "Select THID, THname From THData";
+		List<Integer> THIDS = new ArrayList<Integer>();
+		
+		String output = "";
+		ResultSet rs = null;
+		rs = stmt.executeQuery(sql);
+		try
+		{
+	   		 	rs=stmt.executeQuery(sql);
+	   		 	while (rs.next())
+				{
+	   		 		THIDS.add(Integer.parseInt(rs.getString("THID")));
+	   		 		output += rs.getString("THID") + ", " + rs.getString("THname") + "\n"; 
+				} 
+	   		 	rs.close();
+   		}
+   		catch(Exception e)
+   		{	
+   		}
+   		finally
+   		{
+   			try
+   			{
+   				if (rs!=null && !rs.isClosed())
+	   		 			rs.close();
+   		 	}
+   		 	catch(Exception e)
+   		 	{
+   		 		System.out.println("cannot close resultset");
+   		 	}
+   		}
+		if(THIDS.size() > 0)
+		{
+			System.out.println("Here are the THID's and names of the temporary houses:");
+			System.out.println(output);
+			System.out.println("Select the THID:");
+		
+			String choice;
+			int c = 0;
+			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		
+			while ((choice = in.readLine()) == null)
+				;
+			try 
+			{
+				c = Integer.parseInt(choice);
+			} 
+			catch (Exception e) 
+			{
+			}
+			if(THIDS.contains(c))
+			{
+				return c; //returns THID
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		else
+		{
+			System.out.println("There are no temporary houses listed. \n");
+			return 0;
+		}
+	}
 }
