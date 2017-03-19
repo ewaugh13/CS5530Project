@@ -57,7 +57,7 @@ public class Available
 		}
 	}
 
-	public int displayAndSelectTHAvialable(Statement stmt, Connection conn) throws IOException
+	public int displayAndSelectTHAvialable(Statement stmt) throws IOException
 	{
 		String query = "Select t.THID, t.THname From THData t, Available a Where a.THID = t.THID";
 		String output = "";
@@ -129,7 +129,7 @@ public class Available
 		}
 	}
 
-	public int displayAndSelectPidAvialable(int THID, Statement stmt, Connection conn) throws IOException
+	public int displayAndSelectPidAvialable(int THID, Statement stmt) throws IOException
 	{
 		String query = "Select p.pid, p.fromDate, p.toDate, a.pricePerNight From Available a, Period p Where a.THID = " + THID + " AND a.pid = p.pid";
 		String output = "";

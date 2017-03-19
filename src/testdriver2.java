@@ -33,10 +33,21 @@ public class testdriver2 {
 		System.out.println("5. Record feedback on a temporary house");
 		System.out.println("6. Assess a feedback given");
 		System.out.println("7. Declare a user as trustworthy or not");
-		System.out.println("8. exit Uotel System");
+		System.out.println("8. Browse temporary houses by user specification");
+		System.out.println("9. exit Uotel System");
 		System.out.println("please enter your choice:");
 	}
 
+	public static void displayBrowsingOptions()
+	{
+		System.out.println("1. Browse by range in price");
+		System.out.println("2. Browse by city or state");
+		System.out.println("3. Browse by keywords");
+		System.out.println("4. Browse by category");
+		System.out.println("5. Return to previous menu");
+		System.out.println("please enter your choice:");
+	}
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Connector con = null;
@@ -187,7 +198,7 @@ public class testdriver2 {
 			{
 				continue;
 			}
-			if (c < 1 | c > 8)
+			if (c < 1 | c > 9)
 				continue;
 			if (c == 1) // reserving a place
 			{
@@ -211,36 +222,19 @@ public class testdriver2 {
 			}
 			else if(c == 5) // give feedback
 			{
-				Feedback feedback = new Feedback();
-				TH th = new TH();
-				int selectionID = th.selectAllTH(con.stmt);
-				
-				String feedbackText;
-				String score; // going to need to parse this one when inserting
-
-				System.out.println("give your feedback on the place. Max 140 characters(optional):");
-				while ((feedbackText = in.readLine()) == null && feedbackText.length() == 0)
-					;
-				System.out.println("please enter a score (0 to 10 with 0 being terrible and 10 being excellent):");
-				while ((score = in.readLine()) == null && score.length() == 0)
-					;
-				int scoreInt = Integer.parseInt(score);
-				if(scoreInt > 10 || scoreInt < 0)
-				{
-					System.out.println("Score not in the range specified try again. \n");
-					continue;
-				}
-				String input = selectionID + "," + login + "," + feedbackText + "," + scoreInt;
-				
-				feedback.insertFeedback(input, con.con, con.stmt);
+				giveFeedback(in, con, login);
 			}
 			else if(c == 6) // assess feedback
 			{
 				assessFeedback(in, con, login);
 			}
-			else if(c == 7)
+			else if(c == 7) //declare trustworthy
 			{
-				
+				declareTrustworthy(in, con, login);
+			}
+			else if(c == 8)
+			{
+				browsing(in, con, login);
 			}
 			else 
 			{
@@ -385,10 +379,10 @@ public class testdriver2 {
 		{
 			Available available = new Available();
 			
-			int THID = available.displayAndSelectTHAvialable(con.stmt, con.con);
+			int THID = available.displayAndSelectTHAvialable(con.stmt);
 			if(THID > 0)
 			{
-				int pid = available.displayAndSelectPidAvialable(THID, con.stmt, con.con);
+				int pid = available.displayAndSelectPidAvialable(THID, con.stmt);
 				if(pid > 0)
 				{
 					dictionaryOfReserveIDs.add(new AbstractMap.SimpleEntry(THID, pid));
@@ -430,10 +424,10 @@ public class testdriver2 {
 		{
 			Reserve reserve = new Reserve();
 			
-			int THID = reserve.displayAndSelectReservationTHID(login, con.stmt, con.con);
+			int THID = reserve.displayAndSelectReservationTHID(login, con.stmt);
 			if(THID > 0)
 			{
-				int pid = reserve.displayAndSelectPidReservation(THID, con.stmt, con.con);
+				int pid = reserve.displayAndSelectPidReservation(THID, con.stmt);
 				if(pid > 0)
 				{
 					dictionaryOfVisitIDs.add(new AbstractMap.SimpleEntry(THID, pid));
@@ -616,6 +610,137 @@ public class testdriver2 {
 			}
 			Rates rates = new Rates();
 			rates.insertRating(login, selectionFID, rating, con.con, con.stmt);
+		}
+	}
+
+	private static void declareTrustworthy(BufferedReader in, Connector con, String login) throws IOException, SQLException
+	{
+		String trustChoice = "";
+		int trustC = 0;
+		while(true)
+		{
+			System.out.println("1. Declare user trustworthy.");
+			System.out.println("2. Go back to previous menu.");
+			System.out.println("please enter your choice:");
+			
+			while ((trustChoice = in.readLine()) == null && trustChoice.length() == 0)
+				;
+			try 
+			{
+				trustC = Integer.parseInt(trustChoice);
+			} 
+			catch (Exception e) 
+			{
+				continue;
+			}
+			if (trustC < 1 | trustC > 2)
+				continue;
+			if(trustC == 1)
+			{
+				Trust trust = new Trust();
+				String selectedUser = trust.displayAndSelectUser(login, con.stmt, con.con);
+				if(!selectedUser.equals(""))
+				{
+					String choice = "";
+					int c = 0;
+					System.out.println("If trustworthy give input of 1, if untrustworthy give input of 2 (if not 1 or 2 no trustworthy record will be made on this person). \n");
+					System.out.println("please enter your choice:");
+					
+					while ((choice = in.readLine()) == null && choice.length() == 0)
+						;
+					try 
+					{
+						c = Integer.parseInt(choice);
+					} 
+					catch (Exception e) 
+					{
+					}
+					if(c == 1)
+					{
+						trust.insertRating(login, selectedUser, true, con.con, con.stmt);
+					}
+					else if(c == 2)
+					{
+						trust.insertRating(login, selectedUser, false, con.con, con.stmt);
+					}
+				}
+			}
+			else if(trustC == 2)
+			{
+				break;
+			}		
+		}
+	}
+
+	private static void giveFeedback(BufferedReader in, Connector con, String login) throws SQLException, IOException
+	{
+		Feedback feedback = new Feedback();
+		TH th = new TH();
+		int selectionID = th.selectAllTH(con.stmt);
+		
+		String feedbackText;
+		String score; // going to need to parse this one when inserting
+
+		System.out.println("give your feedback on the place. Max 140 characters(optional):");
+		while ((feedbackText = in.readLine()) == null && feedbackText.length() == 0)
+			;
+		System.out.println("please enter a score (0 to 10 with 0 being terrible and 10 being excellent):");
+		while ((score = in.readLine()) == null && score.length() == 0)
+			;
+		int scoreInt = Integer.parseInt(score);
+		if(scoreInt > 10 || scoreInt < 0)
+		{
+			System.out.println("Score not in the range specified try again. \n");
+		}
+		else
+		{
+			String input = selectionID + "," + login + "," + feedbackText + "," + scoreInt;
+			feedback.insertFeedback(input, con.con, con.stmt);
+		}
+	}
+
+	private static void browsing(BufferedReader in, Connector con, String login) throws IOException
+	{
+		String choice = "";
+		int c = 0;
+		while (true) 
+		{
+			displayBrowsingOptions();
+			
+			while ((choice = in.readLine()) == null && choice.length() == 0)
+				;
+			try 
+			{
+				c = Integer.parseInt(choice);
+			} 
+			catch (Exception e) 
+			{
+				continue;
+			}
+			if (c < 1 | c > 5)
+				continue;
+			Browsing browse = new Browsing();
+			if (c == 1) // browse by price range
+			{
+				
+			} 
+			else if (c == 2) // browse by city or state
+			{
+				String cityOrState = browse.displayAndSelectCityOrState(con.stmt);
+				browse.displayHousesByCityOrState(cityOrState, "", con.stmt);
+			}
+			else if(c == 3) // browse by keywords
+			{
+				
+			}
+			else if(c == 4) // browse by category
+			{
+				
+			}
+			else 
+			{
+				break;
+			}
 		}
 	}
 }

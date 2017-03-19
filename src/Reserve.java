@@ -86,7 +86,7 @@ public class Reserve
 		}
 	}
 
-	public int displayAndSelectReservationTHID(String login, Statement stmt, Connection conn) throws IOException
+	public int displayAndSelectReservationTHID(String login, Statement stmt) throws IOException
 	{
 		String query = "Select t.THID, t.THname From THData t, Reserve r Where r.THID = t.THID AND r.login = '" + login + "'";
 		String output = "";
@@ -157,7 +157,7 @@ public class Reserve
 		}
 	}
 	
-	public int displayAndSelectPidReservation(int THID, Statement stmt, Connection conn) throws IOException
+	public int displayAndSelectPidReservation(int THID, Statement stmt) throws IOException
 	{
 		String query = "Select p.pid, p.fromDate, p.toDate, r.cost From Reserve r, Period p Where r.THID = " + THID + " AND r.pid = p.pid";
 		String output = "";
