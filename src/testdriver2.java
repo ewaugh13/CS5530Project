@@ -330,7 +330,8 @@ public class testdriver2 {
 			System.out.println("1. Create a temporary housing");
 			System.out.println("2. Update a temporary housing");
 			System.out.println("3. Create time available for your temporary housing");
-			System.out.println("4. Go back to user options");
+			System.out.println("4. View you listed temporary houses");
+			System.out.println("5. Go back to user options");
 			System.out.println("please enter your choice:");
 			
 			while ((choice = in.readLine()) == null && choice.length() == 0)
@@ -343,7 +344,7 @@ public class testdriver2 {
 			{
 				continue;
 			}
-			if (c < 1 | c > 4)
+			if (c < 1 | c > 5)
 				continue;		
 		
 			String address; 
@@ -413,6 +414,11 @@ public class testdriver2 {
 						System.out.println("Make sure your price per night is the right value. \n");
 					}
 				}	
+			}
+			else if(c == 4)
+			{
+				TH th = new TH();
+				th.displayUsersTH(con.stmt, login);
 			}
 			else
 			{

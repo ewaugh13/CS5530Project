@@ -272,4 +272,37 @@ public class TH
 			return 0;
 		}
 	}
+
+	public void displayUsersTH(Statement stmt, String login) throws SQLException
+	{
+		String sql = "Select THID, THname From THData Where login = " + login;
+		
+		String output = "";
+		ResultSet rs = null;
+		rs = stmt.executeQuery(sql);
+		try
+		{
+	   		 	rs=stmt.executeQuery(sql);
+	   		 	while (rs.next())
+				{
+	   		 		output += rs.getString("THID") + ", " + rs.getString("THname") + "\n"; 
+				} 
+	   		 	rs.close();
+   		}
+   		catch(Exception e)
+   		{	
+   		}
+   		finally
+   		{
+   			try
+   			{
+   				if (rs!=null && !rs.isClosed())
+	   		 			rs.close();
+   		 	}
+   		 	catch(Exception e)
+   		 	{
+   		 		System.out.println("cannot close resultset");
+   		 	}
+   		}
+	}
 }

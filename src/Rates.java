@@ -18,8 +18,8 @@ public class Rates {
 		    
 		try
 		{
-		preparedDeleteStmt.setString(1, login);
-		preparedDeleteStmt.setInt(2, fid);
+			preparedDeleteStmt.setString(1, login);
+			preparedDeleteStmt.setInt(2, fid);
 		}
 		catch(Exception e)
 		{		
