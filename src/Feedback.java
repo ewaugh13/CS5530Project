@@ -136,7 +136,7 @@ public class Feedback {
 
 	public int selectFidFromTH(int THID, String login, Statement stmt) throws SQLException, IOException
 	{
-		String sql = "Select fid, login, feedText, score From Feedback Where THID = " + THID + " AND login <> " + login;
+		String sql = "Select fid, login, feedText, score From Feedback Where THID = " + THID + " AND login <> '" + login + "'";
 		
 		List<Integer> FIDS = new ArrayList<Integer>();
 		
@@ -206,7 +206,7 @@ public class Feedback {
 	
 	public int selectFid(String login, Statement stmt) throws SQLException, IOException
 	{
-		String sql = "Select fid, login, feedText, score From Feedback";
+		String sql = "Select fid, login, feedText, score From Feedback Where login <> '" + login + "'";
 		
 		List<Integer> FIDS = new ArrayList<Integer>();
 		

@@ -121,7 +121,7 @@ public class Browsing
 		System.out.println(output);
 	}
 
-	public List<String> displayAndSelectKeywords(Statement stmt)
+	public List<String> displayAndSelectKeywords(Statement stmt) throws IOException
 	{
 		String query = "Select word From Keywords";
 		List<String> Keywords = new ArrayList<String>();
@@ -151,46 +151,73 @@ public class Browsing
    		 	}
    		}
 		
-		
-		System.out.println("You can select up to 5 keywords. \n");
-		
-		System.out.println("Here are all the keywords that we have listed:");
-		for(int i = 0; i < Keywords.size(); i++)
-		{
-			System.out.println(Keywords.get(i));
-		}
-		
-		int count = 0;
 		List<String> selectedWords = new ArrayList<String>();
-		
-		while(count < 5)
+		if(Keywords.size() > 0)
 		{
-			if(Keywords.size() > 0)
-			{
-				System.out.println("\nPlease make a selection of keyword that is listed:");
-				
-				String choice;
-				BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+			System.out.println("You can select up to 5 keywords. \n");
 			
-				while ((choice = in.readLine()) == null)
+			System.out.println("Here are all the keywords that we have listed:");
+			for(int i = 0; i < Keywords.size(); i++)
+			{
+				System.out.println(Keywords.get(i));
+			}
+			
+			int count = 0;
+			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+			
+			while(count < 5)
+			{	
+				System.out.println("\n1. Add a keyword to browse by.");
+				System.out.println("2. Done selecting keywords do browsing.");
+				System.out.println("please make a selection (if not 1 or 2 will automatically be 2):");
+				String choice;
+				int c = 0;
+				
+				while ((choice = in.readLine()) == null && choice.length() == 0)
 					;
-				if(Keywords.contains(choice))
+				try 
 				{
-					System.out.println("Selection made. \n");
-					selectedWords.add(choice);
+					c = Integer.parseInt(choice);
+				} 
+				catch (Exception e) 
+				{
+					c = 2;
+				}
+				
+				if(c == 1)
+				{
+					if(Keywords.size() > 0)
+					{
+						System.out.println("\nPlease make a selection of keyword that is listed:");
+					
+						while ((choice = in.readLine()) == null)
+							;
+						if(Keywords.contains(choice))
+						{
+							System.out.println("Selection made.");
+							selectedWords.add(choice);
+						}
+						else
+						{
+							System.out.println("Wrong keyword. Please try again with a keyword that is listed. \n");
+						}
+					}
+					else
+					{
+						System.out.println("There are no more keywords to select. \n");
+						break;
+					}
 				}
 				else
 				{
-					System.out.println("Wrong keyword. Please try again with a keyword that is listed. \n");
+					break;
 				}
+				count++;
 			}
-			else
-			{
-				System.out.println("There are not keywords to browse by. \n");
-				break;
-			}
-			
-			count++;
+		}
+		else
+		{
+			System.out.println("There are not keywords to select. \n");
 		}
 		return selectedWords;
 	}
