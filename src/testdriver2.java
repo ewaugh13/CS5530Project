@@ -53,7 +53,8 @@ public class testdriver2 {
 		Connector con = null;
 		String choice;
 		int c = 0;
-		try {
+		try 
+		{
 			// remember to replace the password
 			con = new Connector();
 			System.out.println("Database connection established");
@@ -65,7 +66,6 @@ public class testdriver2 {
 			{
 				userOptions(in, con, login);
 			}
-
 		} 
 		catch (Exception e) 
 		{
@@ -589,7 +589,7 @@ public class testdriver2 {
 				;
 			try 
 			{
-				ratesC = Integer.parseInt(assessChoice);
+				ratesC = Integer.parseInt(ratesInput);
 			} 
 			catch (Exception e) 
 			{
@@ -731,7 +731,11 @@ public class testdriver2 {
 			}
 			else if(c == 3) // browse by keywords
 			{
-				
+				List<String> keywords = browse.displayAndSelectKeywords(con.stmt);
+				if(keywords.size() > 0)
+				{
+					
+				}
 			}
 			else if(c == 4) // browse by category
 			{
