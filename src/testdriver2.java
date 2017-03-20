@@ -595,21 +595,8 @@ public class testdriver2 {
 			{
 				ratesC = 1;
 			}
-			String rating = "";
-			if(ratesC == 0)
-			{
-				rating = "useless";
-			}
-			else if(ratesC == 1)
-			{
-				rating = "useful";
-			}
-			else
-			{
-				rating = "very useful";
-			}
 			Rates rates = new Rates();
-			rates.insertRating(login, selectionFID, rating, con.con, con.stmt);
+			rates.insertRating(login, selectionFID, ratesC, con.con, con.stmt);
 		}
 	}
 

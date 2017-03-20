@@ -6,7 +6,7 @@ public class Rates {
 	
 	public Rates(){}
 	
-	public void insertRating(String login, int fid, String rating, Connection conn, Statement stmt) throws SQLException, IOException
+	public void insertRating(String login, int fid, int rating, Connection conn, Statement stmt) throws SQLException, IOException
 	{
 		String query = " insert into Rates (login, fid, rating)"
 			     + " values (?, ?, ?)";
@@ -44,13 +44,13 @@ public class Rates {
 		}
 
 	}
-	private static void setValues(PreparedStatement preparedStmt, String login, int fid, String rating) throws SQLException, IOException
+	private static void setValues(PreparedStatement preparedStmt, String login, int fid, int rating) throws SQLException, IOException
 	{
 		try
 		{
 			preparedStmt.setString(1, login);
 			preparedStmt.setInt(2, fid);
-			preparedStmt.setString(3, rating);
+			preparedStmt.setInt(3, rating);
 			
 			exectueStmt(preparedStmt);
 		}
