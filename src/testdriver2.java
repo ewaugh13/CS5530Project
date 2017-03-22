@@ -34,7 +34,8 @@ public class testdriver2 {
 		System.out.println("6. Assess a feedback given");
 		System.out.println("7. Declare a user as trustworthy or not");
 		System.out.println("8. Browse temporary houses by user specification");
-		System.out.println("9. exit Uotel System");
+		System.out.println("9. Display usefulness feedbacks based on ratings");
+		System.out.println("10. exit Uotel System");
 		System.out.println("please enter your choice:");
 	}
 
@@ -182,8 +183,6 @@ public class testdriver2 {
 	{
 		String choice;
 		int c = 0;
-		List<Map.Entry<Integer, Integer>> dictionaryOfReserveIDs = new ArrayList<Map.Entry<Integer, Integer>>();
-		List<Map.Entry<Integer, Integer>> dictionaryOfVisitIDs = new ArrayList<Map.Entry<Integer, Integer>>();
 		while (true) 
 		{
 			displayUserOptions();
@@ -198,11 +197,11 @@ public class testdriver2 {
 			{
 				continue;
 			}
-			if (c < 1 | c > 9)
+			if (c < 1 | c > 10)
 				continue;
 			if (c == 1) // reserving a place
 			{
-				reserveTH(in, con, login, dictionaryOfReserveIDs);
+				reserveTH(in, con, login);
 			} 
 			else if (c == 2) // user creates or updates a TH
 			{
@@ -210,7 +209,7 @@ public class testdriver2 {
 			}
 			else if(c == 3) // record a stay
 			{
-				visitTH(in, con, login, dictionaryOfVisitIDs);
+				visitTH(in, con, login);
 			}
 			else if(c == 4) //record a favorite place to stay
 			{
@@ -235,6 +234,25 @@ public class testdriver2 {
 			else if(c == 8)
 			{
 				browsing(in, con, login);
+			}
+			else if(c == 9)
+			{
+				UsefulFeedbacks usb = new UsefulFeedbacks();
+				TH th = new TH();
+				int THID = th.selectTH(con.stmt, login, "feedback");
+				
+				System.out.println("How many feedbacks do you want to display (any amount will do but if you don't select a number it will automatically be 10):");
+				while ((choice = in.readLine()) == null && choice.length() == 0)
+					;
+				try 
+				{
+					c = Integer.parseInt(choice);
+				} 
+				catch (Exception e) 
+				{
+					c = 10;
+				}
+				usb.getUsefulFeedbacks(THID, c, con.con, con.stmt);
 			}
 			else 
 			{
@@ -373,8 +391,9 @@ public class testdriver2 {
 		}
 	}
 
-	private static List<Map.Entry<Integer, Integer>> reserveTH(BufferedReader in, Connector con, String login, List<Map.Entry<Integer, Integer>> dictionaryOfReserveIDs) throws IOException, SQLException
+	private static void reserveTH(BufferedReader in, Connector con, String login) throws IOException, SQLException
 	{
+		List<Map.Entry<Integer, Integer>> dictionaryOfReserveIDs = new ArrayList<Map.Entry<Integer, Integer>>();
 		while(true)
 		{
 			Available available = new Available();
@@ -413,13 +432,51 @@ public class testdriver2 {
 			} 
 			else // return to menu
 			{
-				return dictionaryOfReserveIDs;
+				if(dictionaryOfReserveIDs.size() > 0)
+				{
+					for (int i = 0; i < dictionaryOfReserveIDs.size(); i++)
+					{
+						//get key is THID get value is pid
+						available.displayReservations(dictionaryOfReserveIDs.get(i).getKey(), dictionaryOfReserveIDs.get(i).getValue(), con.stmt);
+					}
+					
+					String yesOrNo = "";
+					System.out.println("Would you like to confirm these reservations?. \n");
+					
+					System.out.println("please enter yes or no (a choice that isn't yes will automatically be no):");
+					while ((yesOrNo = in.readLine()) == null && yesOrNo.length() == 0)
+						;
+					
+					Reserve reserve = new Reserve();
+					if(yesOrNo.equals("yes"))
+					{
+						for (int i = 0; i < dictionaryOfReserveIDs.size(); i++)
+						{
+							//get key is THID get value is pid
+							reserve.insertReservation(login, dictionaryOfReserveIDs.get(i).getKey(), dictionaryOfReserveIDs.get(i).getValue(), con.con, con.stmt);
+						}
+						System.out.println("Reservations made thank you. \n");
+						
+						for (int i = 0; i < dictionaryOfReserveIDs.size(); i++)
+						{
+							// removes from available once you reserve them
+							available.removeAvailabe(dictionaryOfReserveIDs.get(i).getKey(), dictionaryOfReserveIDs.get(i).getValue(), con.con);
+						}
+					}
+					else
+					{
+						System.out.println("Reservations cancelled and cleared. \n");
+					}
+				}
 			}
 		}
+		
+		
 	}
 
-	private static List<Map.Entry<Integer, Integer>> visitTH(BufferedReader in, Connector con, String login, List<Map.Entry<Integer, Integer>> dictionaryOfVisitIDs) throws IOException, SQLException
+	private static List<Map.Entry<Integer, Integer>> visitTH(BufferedReader in, Connector con, String login) throws IOException, SQLException
 	{
+		List<Map.Entry<Integer, Integer>> dictionaryOfVisitIDs = new ArrayList<Map.Entry<Integer, Integer>> dictionaryOfVisitIDs();
 		while(true)
 		{
 			Reserve reserve = new Reserve();
@@ -458,7 +515,43 @@ public class testdriver2 {
 			} 
 			else // return to menu
 			{
-				return dictionaryOfVisitIDs;
+				else if(dictionaryOfVisitIDs.size() > 0)
+				{
+					Reserve reserve = new Reserve();
+					for (int i = 0; i < dictionaryOfVisitIDs.size(); i++)
+					{
+						//get key is THID get value is pid
+						reserve.displayVisits(dictionaryOfVisitIDs.get(i).getKey(), dictionaryOfVisitIDs.get(i).getValue(), con.stmt);
+					}
+					
+					String yesOrNo = "";
+					System.out.println("Would you like to confirm these visits?. \n");
+					
+					System.out.println("please enter yes or no (a choice that isn't yes will automatically be no):");
+					while ((yesOrNo = in.readLine()) == null && yesOrNo.length() == 0)
+						;
+					
+					Visit visit = new Visit();
+					if(yesOrNo.equals("yes"))
+					{
+						for (int i = 0; i < dictionaryOfVisitIDs.size(); i++)
+						{
+							//get key is THID get value is pid
+							visit.insertVisit(login, dictionaryOfVisitIDs.get(i).getKey(), dictionaryOfVisitIDs.get(i).getValue(), con.con, con.stmt);
+						}
+						System.out.println("Visits recorded thank you. \n");
+						
+						for (int i = 0; i < dictionaryOfVisitIDs.size(); i++)
+						{
+							// removes from available once you reserve them
+							reserve.removeReservation(dictionaryOfVisitIDs.get(i).getKey(), dictionaryOfVisitIDs.get(i).getValue(), con.con);
+						}
+					}
+					else
+					{
+						System.out.println("Visits cancelled and cleared. \n");
+					}
+				}
 			}
 		}
 	}
@@ -714,14 +807,17 @@ public class testdriver2 {
 			else if (c == 2) // browse by city or state
 			{
 				String cityOrState = browse.displayAndSelectCityOrState(con.stmt);
-				browse.displayHousesByCityOrState(cityOrState, "", con.stmt);
+				if(!cityOrState.equals(""))
+				{
+					browse.displayHousesByCityOrState(cityOrState, "", con.stmt);
+				}
 			}
 			else if(c == 3) // browse by keywords
 			{
-				List<String> keywords = browse.displayAndSelectKeywords(con.stmt);
-				if(keywords.size() > 0)
+				List<Integer> keywordIDS = browse.displayAndSelectKeywords(con.stmt);
+				if(keywordIDS.size() > 0)
 				{
-					
+					browse.displayHousesByKeywords(keywordIDS, "", con.stmt);
 				}
 			}
 			else if(c == 4) // browse by category

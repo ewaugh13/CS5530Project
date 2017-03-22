@@ -55,7 +55,15 @@ public class TH
 
 	public int selectTH(Statement stmt, String login, String operation) throws SQLException, IOException
 	{
-		String query = "Select THID, THname From THData T Where T.login = " + login;
+		String query = "";
+		if(operation.equals("update") || operation.equals("available"))
+		{
+			query = "Select THID, THname From THData T Where T.login = " + login;
+		}
+		else
+		{
+			query = "Select THID, THname From THData";
+		}
 		String output = "";
 		List<Integer> THIDS = new ArrayList<Integer>();
 		ResultSet rs=null;
@@ -96,6 +104,10 @@ public class TH
 			else if(operation.equals("available"))
 			{
 				System.out.println("Select the THID of the house you want to make a available:");
+			}
+			else if(operation.equals("feedback"))
+			{
+				System.out.println("Select the THID of the house you want to view the average feedback rates score");
 			}
 		
 			String choice;
