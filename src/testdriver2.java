@@ -252,11 +252,10 @@ public class testdriver2 {
 				{
 					c = 10;
 				}
-				usb.getUsefulFeedbacks(THID, c, con.con, con.stmt);
+				usb.getUsefulFeedbacks(THID, c, con.stmt);
 			}
 			else 
 			{
-				logoutSelection(login, dictionaryOfReserveIDs, dictionaryOfVisitIDs, in, con);
 				System.out.println("Thank you for using Uotel System. \n");
 				con.stmt.close();
 				break;
@@ -412,7 +411,7 @@ public class testdriver2 {
 			int c;
 
 			System.out.println("1. Reserve another temorary housing.");
-			System.out.println("2. Return to previous screen.");
+			System.out.println("2. Confirm reservations and return to previous screen.");
 			System.out.println("please enter your choice (a choice that isn't 1 or 2 will automatically be choice 2): \n");
 				
 			while ((choice = in.readLine()) == null && choice.length() == 0)
@@ -468,15 +467,16 @@ public class testdriver2 {
 						System.out.println("Reservations cancelled and cleared. \n");
 					}
 				}
+				break;
 			}
 		}
 		
 		
 	}
 
-	private static List<Map.Entry<Integer, Integer>> visitTH(BufferedReader in, Connector con, String login) throws IOException, SQLException
+	private static void visitTH(BufferedReader in, Connector con, String login) throws IOException, SQLException
 	{
-		List<Map.Entry<Integer, Integer>> dictionaryOfVisitIDs = new ArrayList<Map.Entry<Integer, Integer>> dictionaryOfVisitIDs();
+		List<Map.Entry<Integer, Integer>> dictionaryOfVisitIDs = new ArrayList<Map.Entry<Integer, Integer>>();
 		while(true)
 		{
 			Reserve reserve = new Reserve();
@@ -495,7 +495,7 @@ public class testdriver2 {
 			int c;
 
 			System.out.println("1. Record visit to another temorary housing.");
-			System.out.println("2. Return to previous screen.");
+			System.out.println("2. Confirm visits and return to previous screen.");
 			System.out.println("please enter your choice (a choice that isn't 1 or 2 will automatically be choice 2): \n");
 				
 			while ((choice = in.readLine()) == null && choice.length() == 0)
@@ -515,9 +515,8 @@ public class testdriver2 {
 			} 
 			else // return to menu
 			{
-				else if(dictionaryOfVisitIDs.size() > 0)
+				if(dictionaryOfVisitIDs.size() > 0)
 				{
-					Reserve reserve = new Reserve();
 					for (int i = 0; i < dictionaryOfVisitIDs.size(); i++)
 					{
 						//get key is THID get value is pid
@@ -552,89 +551,9 @@ public class testdriver2 {
 						System.out.println("Visits cancelled and cleared. \n");
 					}
 				}
+				break;
 			}
 		}
-	}
-	
-	private static void logoutSelection(String login, List<Map.Entry<Integer, Integer>> dictionaryOfReserveIDs, List<Map.Entry<Integer, Integer>> dictionaryOfVisitIDs, BufferedReader in, Connector con) throws IOException, SQLException
-	{
-		if(dictionaryOfReserveIDs.size() > 0)
-		{
-			Available available = new Available();
-			for (int i = 0; i < dictionaryOfReserveIDs.size(); i++)
-			{
-				//get key is THID get value is pid
-				available.displayReservations(dictionaryOfReserveIDs.get(i).getKey(), dictionaryOfReserveIDs.get(i).getValue(), con.stmt);
-			}
-			
-			String yesOrNo = "";
-			System.out.println("Would you like to confirm these reservations?. \n");
-			
-			System.out.println("please enter yes or no (a choice that isn't yes will automatically be no):");
-			while ((yesOrNo = in.readLine()) == null && yesOrNo.length() == 0)
-				;
-			
-			Reserve reserve = new Reserve();
-			if(yesOrNo.equals("yes"))
-			{
-				for (int i = 0; i < dictionaryOfReserveIDs.size(); i++)
-				{
-					//get key is THID get value is pid
-					reserve.insertReservation(login, dictionaryOfReserveIDs.get(i).getKey(), dictionaryOfReserveIDs.get(i).getValue(), con.con, con.stmt);
-				}
-				System.out.println("Reservations made thank you. \n");
-				
-				for (int i = 0; i < dictionaryOfReserveIDs.size(); i++)
-				{
-					// removes from available once you reserve them
-					available.removeAvailabe(dictionaryOfReserveIDs.get(i).getKey(), dictionaryOfReserveIDs.get(i).getValue(), con.con);
-				}
-			}
-			else
-			{
-				System.out.println("Reservations cancelled and cleared. \n");
-			}
-		}
-		else if(dictionaryOfVisitIDs.size() > 0)
-		{
-			Reserve reserve = new Reserve();
-			for (int i = 0; i < dictionaryOfVisitIDs.size(); i++)
-			{
-				//get key is THID get value is pid
-				reserve.displayVisits(dictionaryOfVisitIDs.get(i).getKey(), dictionaryOfVisitIDs.get(i).getValue(), con.stmt);
-			}
-			
-			String yesOrNo = "";
-			System.out.println("Would you like to confirm these visits?. \n");
-			
-			System.out.println("please enter yes or no (a choice that isn't yes will automatically be no):");
-			while ((yesOrNo = in.readLine()) == null && yesOrNo.length() == 0)
-				;
-			
-			Visit visit = new Visit();
-			if(yesOrNo.equals("yes"))
-			{
-				for (int i = 0; i < dictionaryOfVisitIDs.size(); i++)
-				{
-					//get key is THID get value is pid
-					visit.insertVisit(login, dictionaryOfVisitIDs.get(i).getKey(), dictionaryOfVisitIDs.get(i).getValue(), con.con, con.stmt);
-				}
-				System.out.println("Visits recorded thank you. \n");
-				
-				for (int i = 0; i < dictionaryOfVisitIDs.size(); i++)
-				{
-					// removes from available once you reserve them
-					reserve.removeReservation(dictionaryOfVisitIDs.get(i).getKey(), dictionaryOfVisitIDs.get(i).getValue(), con.con);
-				}
-			}
-			else
-			{
-				System.out.println("Visits cancelled and cleared. \n");
-			}
-		}
-		
-		dictionaryOfReserveIDs.clear();
-		dictionaryOfVisitIDs.clear();
 	}
 
 	private static void assessFeedback(BufferedReader in, Connector con, String login) throws SQLException, IOException
