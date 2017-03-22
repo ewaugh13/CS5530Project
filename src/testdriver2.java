@@ -45,8 +45,9 @@ public class testdriver2 {
 		System.out.println("2. Browse by city or state");
 		System.out.println("3. Browse by keywords");
 		System.out.println("4. Browse by category");
-		System.out.println("5. Return to previous menu");
-		System.out.println("please enter your choice:");
+		System.out.println("5. Browse by what has been selected");
+		System.out.println("6. Stop browseing and return to previous menu");
+		System.out.println("please enter your choice (if you select something that you already have no changes will be made to selection):");
 	}
 	
 	public static void main(String[] args) {
@@ -702,6 +703,8 @@ public class testdriver2 {
 	{
 		String choice = "";
 		int c = 0;
+		List<Integer> selectedBrowsing = new ArrayList<Integer>();
+		boolean search = true;
 		while (true) 
 		{
 			displayBrowsingOptions();
@@ -716,36 +719,119 @@ public class testdriver2 {
 			{
 				continue;
 			}
-			if (c < 1 | c > 5)
+			if (c < 1 | c > 6)
 				continue;
+			
+			if(c == 1) // add browse by range in price
+			{
+				if(selectedBrowsing.contains(1))
+				{
+					System.out.println("Browsing by range in price has already been selected. \n");
+				}
+				else
+				{
+					selectedBrowsing.add(1);
+				}
+			}
+			else if(c == 2) // add browse by city or state
+			{
+				if(selectedBrowsing.contains(2))
+				{
+					System.out.println("Browsing by city or state has already been selected. \n");
+				}
+				else
+				{
+					selectedBrowsing.add(2);
+				}
+			}
+			else if(c == 3) // add browse by keywords
+			{
+				if(selectedBrowsing.contains(3))
+				{
+					System.out.println("Browsing by keywords has already been selected. \n");
+				}
+				else
+				{
+					selectedBrowsing.add(3);
+				}
+			}
+			else if(c == 4) // add browse by category
+			{
+				if(selectedBrowsing.contains(4))
+				{
+					System.out.println("Browsing by category has already been selected. \n");
+				}
+				else
+				{
+					selectedBrowsing.add(4);
+				}
+			}
+			
+			else if(c == 5) // run selected things or 
+			{
+				if(selectedBrowsing.size() == 0)
+				{
+					System.out.println("No selected browsing options made please make a selection or exit the browsing system. \n");
+				}
+				else
+				{
+					break;
+				}
+			}
+			
+			else if(c == 6)
+			{
+				search = false;
+				break;
+			}
+		}
+		if(search)
+		{
+			boolean browsePrice = false;
+			boolean browseCityOrState = false;
+			boolean browseKeywords = false;
+			boolean browseCategory = false;
+			
+			String cityOrState = "";
+			List<Integer> keywordIDS = new ArrayList<Integer>();
+			String category = "";
 			Browsing browse = new Browsing();
-			if (c == 1) // browse by price range
+			if (selectedBrowsing.contains(1)) // browse by price range
 			{
 				
 			} 
-			else if (c == 2) // browse by city or state
+			if (selectedBrowsing.contains(2)) // browse by city or state
 			{
-				String cityOrState = browse.displayAndSelectCityOrState(con.stmt);
+				cityOrState = browse.displayAndSelectCityOrState(con.stmt);
 				if(!cityOrState.equals(""))
 				{
-					browse.displayHousesByCityOrState(cityOrState, "", con.stmt);
+					browseCityOrState = true;
 				}
 			}
-			else if(c == 3) // browse by keywords
+			if(selectedBrowsing.contains(3)) // browse by keywords
 			{
-				List<Integer> keywordIDS = browse.displayAndSelectKeywords(con.stmt);
+				keywordIDS = browse.displayAndSelectKeywords(con.stmt);
 				if(keywordIDS.size() > 0)
 				{
-					browse.displayHousesByKeywords(keywordIDS, "", con.stmt);
+					browseKeywords = true;
 				}
 			}
-			else if(c == 4) // browse by category
+			if(selectedBrowsing.contains(4)) // browse by category
 			{
-				
+				category = browse.displayAndSelectCategory(con.stmt);
+				if(!category.equals(""))
+				{
+					browseCategory = true;
+				}
 			}
-			else 
+			
+			if(browseKeywords)
 			{
-				break;
+				//browse by keywords and what ever follows
+			}
+			else if(browsePrice || browseKeywords || browseCategory)
+			{
+				//do general browsing
 			}
 		}
 	}

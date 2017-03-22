@@ -86,41 +86,6 @@ public class Browsing
 		}
 	}
 
-	public void displayHousesByCityOrState(String selection, String sortingMethod, Statement stmt)
-	{
-		String query = "Select THID, THname From THData Where city = '" + selection + "' OR state = '" + selection + "'";
-		String output = "";
-		ResultSet rs=null;
-		try
-		{
-	   		 	rs=stmt.executeQuery(query);
-	   		 	while (rs.next())
-				{
-	   		 		output += rs.getString("THID") + ", " + rs.getString("THname") + "\n"; 
-				} 
-	   		 	rs.close();
-   		}
-   		catch(Exception e)
-   		{
-   			
-   		}
-   		finally
-   		{
-   			try
-   			{
-   				if (rs!=null && !rs.isClosed())
-	   		 			rs.close();
-   		 	}
-   		 	catch(Exception e)
-   		 	{
-   		 		System.out.println("cannot close resultset");
-   		 	}
-   		}
-
-		System.out.println("Here are the THID's and names that match by the city or state that you selected:");
-		System.out.println(output);
-	}
-
 	public List<Integer> displayAndSelectKeywords(Statement stmt) throws IOException
 	{
 		String query = "Select word From Keywords";
@@ -247,71 +212,7 @@ public class Browsing
 		}
 		return selectedWIDS;
 	}
-	
-	public void displayHousesByKeywords(List<Integer> wids, String sortingMethod, Statement stmt)
-	{
-		//SELECT R1.sid FROM Boats B1, Reserves R1, Boats B2, Reserves R2 WHERE R1.sid=R2.sid
-				//AND R1.bid=B1.bid AND R2.bid=B2.bid AND (B1.color=‘red’ AND B2.color=‘green’)
-		String query = "Select t0.THID, t0.THname From"; //THData t, HasKeywords h Where t.THID = h.THID";
-		for(int i = 0; i < wids.size(); i++) //add froms
-		{
-			if(i == wids.size() - 1)
-			{
-				query += " THData t" + i + ", HasKeywords h" + i;
-			}
-			else
-			{
-				query += " THData t" + i + ", HasKeywords h" + i + ",";
-			}
-		}
-		query += " Where ";
-		for(int i = 0; i < wids.size(); i++) //add wheres with equal thid
-		{
-			query += "t" + i + ".THID = h" + i + ".THID AND ";
-		}
-		for(int i = 0; i < wids.size(); i++) //add where with equal wid
-		{
-			if(i == wids.size() - 1)
-			{
-				query += "h" + i + ".wid = " + wids.get(i);
-			}
-			else
-			{
-				query += "h" + i + ".wid = " + wids.get(i) + " AND ";
-			}
-		}
-		String output = "";
-		ResultSet rs=null;
-		try
-		{
-			rs=stmt.executeQuery(query);
-		   	while (rs.next())
-			{
-		   		output += rs.getString("THID") + ", " + rs.getString("THname") + "\n"; 
-			} 
-		   		rs.close();
-	   	}
-	   	catch(Exception e)
-	   	{
-	   		System.out.println(e);
-	   	}
-	   	finally
-	   	{
-	   		try
-	   		{
-	   			if (rs!=null && !rs.isClosed())
-		   		 	rs.close();
-	   		}
-	   		catch(Exception e)
-	   		{
-	   			System.out.println("cannot close resultset");
-	   		}
-	   	}
 		
-		System.out.println("Here are the THID's and names that match all the keywords that you selected:");
-		System.out.println(output);
-	}
-	
 	public String displayAndSelectCategory(Statement stmt) throws IOException
 	{
 		String query = "Select category From THData";
@@ -378,9 +279,21 @@ public class Browsing
 		}
 	}
 
-	public void displayHousesByCategory(String selection, String sortingMethod, Statement stmt)
+	public void displayHouses(String selectCityOrState, boolean cityOrState, String selectCategory, boolean category, String sortingMethod, Statement stmt)
 	{
-		String query = "Select THID, THname From THData Where category = '" + selection + "'";
+		String query = "Select THID, THname From THData Where";
+		if(cityOrState)
+		{
+			query += " city = '" + selectCityOrState + "' OR state = '" + selectCityOrState + "'";
+			if(category)
+			{
+				query += " AND ";
+			}
+		}
+		if(category)
+		{
+			query += " category = '" + selectCategory + "'";
+		}
 		String output = "";
 		ResultSet rs=null;
 		try
@@ -409,7 +322,71 @@ public class Browsing
    		 	}
    		}
 
-		System.out.println("Here are the THID's and names that match by the category that you selected:");
+		System.out.println("Here are the THID's and names based on your selection sorted in:"); //add how they are sorted
+		System.out.println(output);
+	}
+
+	public void displayHousesByKeywords(List<Integer> wids, String sortingMethod, Statement stmt)
+	{
+		String query = "Select t0.THID, t0.THname From"; //THData t, HasKeywords h Where t.THID = h.THID";
+		for(int i = 0; i < wids.size(); i++) //add froms
+		{
+			if(i == wids.size() - 1)
+			{
+				query += " THData t" + i + ", HasKeywords h" + i;
+			}
+			else
+			{
+				query += " THData t" + i + ", HasKeywords h" + i + ",";
+			}
+		}
+		query += " Where ";
+		for(int i = 0; i < wids.size(); i++) //add wheres with equal thid
+		{
+			query += "t" + i + ".THID = h" + i + ".THID AND ";
+		}
+		for(int i = 0; i < wids.size(); i++) //add where with equal wid
+		{
+			if(i == wids.size() - 1)
+			{
+				query += "h" + i + ".wid = " + wids.get(i);
+			}
+			else
+			{
+				query += "h" + i + ".wid = " + wids.get(i) + " AND ";
+			}
+		}
+		//if(category)
+		//if(addressOrCity)
+		String output = "";
+		ResultSet rs=null;
+		try
+		{
+			rs=stmt.executeQuery(query);
+		   	while (rs.next())
+			{
+		   		output += rs.getString("THID") + ", " + rs.getString("THname") + "\n"; 
+			} 
+		   		rs.close();
+	   	}
+	   	catch(Exception e)
+	   	{
+	   		System.out.println(e);
+	   	}
+	   	finally
+	   	{
+	   		try
+	   		{
+	   			if (rs!=null && !rs.isClosed())
+		   		 	rs.close();
+	   		}
+	   		catch(Exception e)
+	   		{
+	   			System.out.println("cannot close resultset");
+	   		}
+	   	}
+		
+		System.out.println("Here are the THID's and names that match all the keywords that you selected:");
 		System.out.println(output);
 	}
 }
