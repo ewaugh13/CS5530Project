@@ -121,7 +121,7 @@ public class Browsing
 		System.out.println(output);
 	}
 
-	public List<String> displayAndSelectKeywords(Statement stmt) throws IOException
+	public List<Integer> displayAndSelectKeywords(Statement stmt) throws IOException
 	{
 		String query = "Select word From Keywords";
 		List<String> Keywords = new ArrayList<String>();
@@ -151,7 +151,7 @@ public class Browsing
    		 	}
    		}
 		
-		List<String> selectedWords = new ArrayList<String>();
+		List<Integer> selectedWIDS = new ArrayList<Integer>();
 		if(Keywords.size() > 0)
 		{
 			System.out.println("You can select up to 5 keywords. \n");
@@ -195,7 +195,33 @@ public class Browsing
 						if(Keywords.contains(choice))
 						{
 							System.out.println("Selection made.");
-							selectedWords.add(choice);
+							String sqlConvert = "Select wid From Keywords where word = '" + choice + "'";
+							
+							ResultSet rs1=null; 
+							try
+							{
+									rs1=stmt.executeQuery(sqlConvert);
+						   		 	while (rs1.next())
+									{
+						   		 		selectedWIDS.add(Integer.parseInt(rs1.getString("wid")));
+									} 
+						   		 	rs1.close();
+					   		}
+					   		catch(Exception e)
+					   		{
+					   		}
+					   		finally
+					   		{
+					   			try
+					   			{
+					   				if (rs1!=null && !rs1.isClosed())
+					   					rs1.close();
+					   		 	}
+					   		 	catch(Exception e)
+					   		 	{
+					   		 		System.out.println("cannot close resultset");
+					   		 	}
+					   		}
 						}
 						else
 						{
@@ -219,7 +245,71 @@ public class Browsing
 		{
 			System.out.println("There are not keywords to select. \n");
 		}
-		return selectedWords;
+		return selectedWIDS;
+	}
+	
+	public void displayHousesByKeywords(List<Integer> wids, String sortingMethod, Statement stmt)
+	{
+		//SELECT R1.sid FROM Boats B1, Reserves R1, Boats B2, Reserves R2 WHERE R1.sid=R2.sid
+				//AND R1.bid=B1.bid AND R2.bid=B2.bid AND (B1.color=‘red’ AND B2.color=‘green’)
+		String query = "Select t0.THID, t0.THname From"; //THData t, HasKeywords h Where t.THID = h.THID";
+		for(int i = 0; i < wids.size(); i++) //add froms
+		{
+			if(i == wids.size() - 1)
+			{
+				query += " THData t" + i + ", HasKeywords h" + i;
+			}
+			else
+			{
+				query += " THData t" + i + ", HasKeywords h" + i + ",";
+			}
+		}
+		query += " Where ";
+		for(int i = 0; i < wids.size(); i++) //add wheres with equal thid
+		{
+			query += "t" + i + ".THID = h" + i + ".THID AND ";
+		}
+		for(int i = 0; i < wids.size(); i++) //add where with equal wid
+		{
+			if(i == wids.size() - 1)
+			{
+				query += "h" + i + ".wid = " + wids.get(i);
+			}
+			else
+			{
+				query += "h" + i + ".wid = " + wids.get(i) + " AND ";
+			}
+		}
+		String output = "";
+		ResultSet rs=null;
+		try
+		{
+			rs=stmt.executeQuery(query);
+		   	while (rs.next())
+			{
+		   		output += rs.getString("THID") + ", " + rs.getString("THname") + "\n"; 
+			} 
+		   		rs.close();
+	   	}
+	   	catch(Exception e)
+	   	{
+	   		System.out.println(e);
+	   	}
+	   	finally
+	   	{
+	   		try
+	   		{
+	   			if (rs!=null && !rs.isClosed())
+		   		 	rs.close();
+	   		}
+	   		catch(Exception e)
+	   		{
+	   			System.out.println("cannot close resultset");
+	   		}
+	   	}
+		
+		System.out.println("Here are the THID's and names that match all the keywords that you selected:");
+		System.out.println(output);
 	}
 	
 	public String displayAndSelectCategory(Statement stmt) throws IOException
