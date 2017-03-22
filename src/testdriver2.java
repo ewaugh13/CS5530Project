@@ -767,11 +767,11 @@ public class testdriver2 {
 				}
 			}
 			
-			else if(c == 5) // run selected things or 
+			else if(c == 5) // run selected things or tells them nothing has been selected
 			{
 				if(selectedBrowsing.size() == 0)
 				{
-					System.out.println("No selected browsing options made please make a selection or exit the browsing system. \n");
+					System.out.println("No selected browsing options made. Please make a selection or exit the browsing system. \n");
 				}
 				else
 				{
@@ -829,7 +829,7 @@ public class testdriver2 {
 			{
 				//browse by keywords and what ever follows
 			}
-			else if(browsePrice || browseKeywords || browseCategory)
+			else if(browsePrice || browseCityOrState || browseCategory)
 			{
 				//do general browsing
 			}
