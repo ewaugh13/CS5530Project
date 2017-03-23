@@ -133,7 +133,7 @@ public class Browsing
 			while(count < 5)
 			{	
 				System.out.println("\n1. Add a keyword to browse by.");
-				System.out.println("2. Done selecting keywords do browsing.");
+				System.out.println("2. Done selecting keywords for browsing.");
 				System.out.println("please make a selection (if not 1 or 2 will automatically be 2):");
 				String choice;
 				int c = 0;
@@ -278,21 +278,79 @@ public class Browsing
 			return "";
 		}
 	}
-
-	public void displayHouses(String selectCityOrState, boolean cityOrState, String selectCategory, boolean category, String sortingMethod, Statement stmt)
+	
+	public void displayHouses(int lowPrice, int highPrice, boolean price, String selectCityOrState, boolean cityOrState, boolean orAndCityState, String selectCategory, boolean category, boolean orAndCategory, String sortingMethod, Statement stmt)
 	{
-		String query = "Select THID, THname From THData Where";
+		String query = "";
+		if(price)
+		{
+			query = "Select t0.THID, t0.THName From Available a, THData t0 Where a.THID = t0.THID AND a.pricePerNight >= " + lowPrice + " AND a.pricePerNight <= " + highPrice;
+			if(cityOrState)
+			{
+				if(orAndCityState) //and case
+				{
+					query += " AND ";
+				}
+				else
+				{
+					query += " OR ";
+				}
+			}
+			else if(category)
+			{
+				if(orAndCategory) //and case
+				{
+					query += " AND ";
+				}
+				else
+				{
+					query += " OR ";
+				}
+			}
+		}
+		else if(sortingMethod.equals("price"))
+		{
+			query = "Select t0.THID, t0.THName From Available a, THData t0 Where a.THID = t0.THID AND ";
+		}
+		else if(sortingMethod.equals("feedback"))
+		{
+			query = "Select t0.THID, t0.THName From Feedback f, THData t0 Where f.THID = t0.THID AND ";
+		}
+		else
+		{
+			query = "Select t0.THID, t0.THname From THData t0 Where";
+		}
 		if(cityOrState)
 		{
-			query += " city = '" + selectCityOrState + "' OR state = '" + selectCityOrState + "'";
+			query += " t0.city = '" + selectCityOrState + "' OR t0.state = '" + selectCityOrState + "'";
 			if(category)
 			{
-				query += " AND ";
+				if(orAndCategory) //and case
+				{
+					query += " AND ";
+				}
+				else
+				{
+					query += " OR ";
+				}
 			}
 		}
 		if(category)
 		{
-			query += " category = '" + selectCategory + "'";
+			query += " t0.category = '" + selectCategory + "'";
+		}
+		query += " Group by t0.THID";
+		if(sortingMethod.equals("price"))
+		{
+			query += " order by pricePerNight asc";
+		}
+		else if(sortingMethod.equals("feedback"))
+		{
+			query += " order by avg(f.score) desc";
+		}
+		else if(sortingMethod.equals("trust"))
+		{
+			
 		}
 		String output = "";
 		ResultSet rs=null;
@@ -322,13 +380,17 @@ public class Browsing
    		 	}
    		}
 
-		System.out.println("Here are the THID's and names based on your selection sorted in:"); //add how they are sorted
+		if(sortingMethod.equals("price"))
+		{
+			System.out.println("Here are the THID's and names based on your selection sorted by " + sortingMethod + "(if nothing printed then nothing matched):");
+		}
 		System.out.println(output);
 	}
 
-	public void displayHousesByKeywords(List<Integer> wids, String sortingMethod, Statement stmt)
+	public void displayHousesByKeywords(List<Integer> wids, int lowPrice, int highPrice, boolean price, boolean orAndPrice, String selectCityOrState, boolean cityOrState, boolean orAndCityState, String selectCategory, boolean category, boolean orAndCategory, String sortingMethod, Statement stmt)
 	{
-		String query = "Select t0.THID, t0.THname From"; //THData t, HasKeywords h Where t.THID = h.THID";
+		// still need to add price to this one
+		String query = "Select t0.THID, t0.THname From";
 		for(int i = 0; i < wids.size(); i++) //add froms
 		{
 			if(i == wids.size() - 1)
@@ -340,7 +402,30 @@ public class Browsing
 				query += " THData t" + i + ", HasKeywords h" + i + ",";
 			}
 		}
-		query += " Where ";
+		if(price)
+		{
+			query += ", Available a Where a.THID = t0.THID AND a.pricePerNight >= " + lowPrice + " AND a.pricePerNight <= " + highPrice;
+			if(orAndPrice) //and case
+			{
+				query += " AND ";
+			}
+			else
+			{
+				query += " OR ";
+			}
+		}
+		else if(sortingMethod.equals("price"))
+		{
+			query += ", Available a Where a.THID = t0.THID AND ";
+		}
+		else if(sortingMethod.equals("feedback"))
+		{
+			query += ", Feedback f Where f.THID = t0.THID AND ";
+		}
+		else
+		{
+			query += " Where ";
+		}
 		for(int i = 0; i < wids.size(); i++) //add wheres with equal thid
 		{
 			query += "t" + i + ".THID = h" + i + ".THID AND ";
@@ -356,8 +441,43 @@ public class Browsing
 				query += "h" + i + ".wid = " + wids.get(i) + " AND ";
 			}
 		}
-		//if(category)
-		//if(addressOrCity)
+		if(cityOrState)
+		{
+			if(orAndCityState) //and case
+			{
+				query += " AND ";
+			}
+			else
+			{
+				query += " OR ";
+			}
+			query += " t0.city = '" + selectCityOrState + "' OR t0.state = '" + selectCityOrState + "'";
+		}
+		if(category)
+		{
+			if(orAndCategory) //and case
+			{
+				query += " AND ";
+			}
+			else
+			{
+				query += " OR ";
+			}
+			query += " t0.category = '" + selectCategory + "'";
+		}
+		query += " Group by t0.THID";
+		if(sortingMethod.equals("price"))
+		{
+			query += " order by pricePerNight asc";
+		}
+		else if(sortingMethod.equals("feedback"))
+		{
+			query += " order by avg(f.score) desc";
+		}
+		else if(sortingMethod.equals("trust"))
+		{
+			
+		}
 		String output = "";
 		ResultSet rs=null;
 		try
@@ -386,7 +506,11 @@ public class Browsing
 	   		}
 	   	}
 		
-		System.out.println("Here are the THID's and names that match all the keywords that you selected:");
+		if(sortingMethod.equals("price"))
+		{
+			System.out.println("Here are the THID's and names based on your selection sorted by " + sortingMethod + "(if nothing printed then nothing matched):");
+		}
 		System.out.println(output);
 	}
+
 }
