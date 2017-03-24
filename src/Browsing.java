@@ -279,7 +279,7 @@ public class Browsing
 		}
 	}
 	
-	public void displayHouses(int lowPrice, int highPrice, boolean price, String selectCityOrState, boolean cityOrState, boolean orAndCityState, String selectCategory, boolean category, boolean orAndCategory, String sortingMethod, Statement stmt)
+	public void displayHouses(String login, int lowPrice, int highPrice, boolean price, String selectCityOrState, boolean cityOrState, boolean orAndCityState, String selectCategory, boolean category, boolean orAndCategory, String sortingMethod, Statement stmt)
 	{
 		String query = "";
 		if(price)
@@ -316,6 +316,10 @@ public class Browsing
 		{
 			query = "Select t0.THID, t0.THName From Feedback f, THData t0 Where f.THID = t0.THID AND ";
 		}
+		else if(sortingMethod.equals("trust"))
+		{
+			query = "Select t0.THID, t0.THName From Feedback f, THData t0, Trust tr Where f.THID = t0.THID AND f.login = tr.login1 and tr.isTrusted = true and tr.login1 = " + login + " AND ";
+		}
 		else
 		{
 			query = "Select t0.THID, t0.THname From THData t0 Where";
@@ -350,7 +354,7 @@ public class Browsing
 		}
 		else if(sortingMethod.equals("trust"))
 		{
-			
+			query += " order by avg(f.score) desc";
 		}
 		String output = "";
 		ResultSet rs=null;
@@ -384,14 +388,21 @@ public class Browsing
 		{
 			System.out.println("Here are the THID's and names based on your selection sorted by " + sortingMethod + "(if nothing printed then nothing matched):");
 		}
+		else if(sortingMethod.equals("feedback"))
+		{
+			System.out.println("Here are the THID's and names based on your selection sorted by " + sortingMethod + " score " + "(if nothing printed then nothing matched):");
+		}
+		else
+		{
+			System.out.println("Here are the THID's and names based on your selection sorted by " + sortingMethod + " score of users you trust " + "(if nothing printed then nothing matched):");
+		}
 		System.out.println(output);
 	}
 
-	public void displayHousesByKeywords(List<Integer> wids, int lowPrice, int highPrice, boolean price, boolean orAndPrice, String selectCityOrState, boolean cityOrState, boolean orAndCityState, String selectCategory, boolean category, boolean orAndCategory, String sortingMethod, Statement stmt)
+	public void displayHousesByKeywords(String login, List<Integer> wids, int lowPrice, int highPrice, boolean price, boolean orAndPrice, String selectCityOrState, boolean cityOrState, boolean orAndCityState, String selectCategory, boolean category, boolean orAndCategory, String sortingMethod, Statement stmt)
 	{
-		// still need to add price to this one
 		String query = "Select t0.THID, t0.THname From";
-		for(int i = 0; i < wids.size(); i++) //add froms
+		for(int i = 0; i < wids.size(); i++)
 		{
 			if(i == wids.size() - 1)
 			{
@@ -421,6 +432,10 @@ public class Browsing
 		else if(sortingMethod.equals("feedback"))
 		{
 			query += ", Feedback f Where f.THID = t0.THID AND ";
+		}
+		else if(sortingMethod.equals("trust"))
+		{
+			query += ", Feedback f, Trust tr Where f.THID = t0.THID AND f.login = tr.login1 and tr.isTrusted = true and tr.login1 = " + login + " AND ";
 		}
 		else
 		{
@@ -476,7 +491,7 @@ public class Browsing
 		}
 		else if(sortingMethod.equals("trust"))
 		{
-			
+			query += " order by avg(f.score) desc";
 		}
 		String output = "";
 		ResultSet rs=null;
@@ -509,6 +524,14 @@ public class Browsing
 		if(sortingMethod.equals("price"))
 		{
 			System.out.println("Here are the THID's and names based on your selection sorted by " + sortingMethod + "(if nothing printed then nothing matched):");
+		}
+		else if(sortingMethod.equals("feedback"))
+		{
+			System.out.println("Here are the THID's and names based on your selection sorted by " + sortingMethod + " score " + "(if nothing printed then nothing matched):");
+		}
+		else
+		{
+			System.out.println("Here are the THID's and names based on your selection sorted by " + sortingMethod + " score of users you trust " + "(if nothing printed then nothing matched):");
 		}
 		System.out.println(output);
 	}

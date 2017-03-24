@@ -61,7 +61,7 @@ public class testdriver2 {
 	{
 		System.out.println("1. Display in order of cheapest first (will only select temporary houses that are available)");
 		System.out.println("2. Average score of feedbacks (will only select temporary houses that have feedbacks)");
-		System.out.println("3. Average score of trusted user feedbacks (will only select temporary houses that have trust information for user feedbacks)");
+		System.out.println("3. Average score of trusted user feedbacks (will only select temporary houses that have feedback from users you have declared as trusted)");
 		System.out.println("please enter your choice:");
 	}
 	
@@ -881,7 +881,6 @@ public class testdriver2 {
 			
 			boolean orAndPrice = true; //true means 'and' where false means 'or'
 			boolean orAndCityState = true; //true means 'and' where false means 'or'
-			boolean orAndKeywords = true; //true means 'and' where false means 'or'
 			boolean orAndCategory = true; //true means 'and' where false means 'or'
 			
 			String lowRange = "";
@@ -923,10 +922,6 @@ public class testdriver2 {
 				if(keywordIDS.size() > 0)
 				{
 					browseKeywords = true;
-					if(selectedBrowsing.get(3).equals("or"))
-					{
-						orAndKeywords = false;
-					}
 				}
 			}
 			if(selectedBrowsing.containsKey(4)) // browse by category
@@ -976,11 +971,11 @@ public class testdriver2 {
 			
 			if(browseKeywords)
 			{
-				browse.displayHousesByKeywords(keywordIDS, Integer.parseInt(lowRange), Integer.parseInt(highRange), browsePrice, orAndPrice, cityOrState, browseCityOrState, orAndCityState, category, browseCategory, orAndCategory, sortingMethod, con.stmt);
+				browse.displayHousesByKeywords(login, keywordIDS, Integer.parseInt(lowRange), Integer.parseInt(highRange), browsePrice, orAndPrice, cityOrState, browseCityOrState, orAndCityState, category, browseCategory, orAndCategory, sortingMethod, con.stmt);
 			}
 			else if(browsePrice || browseCityOrState || browseCategory)
 			{
-				browse.displayHouses(Integer.parseInt(lowRange), Integer.parseInt(highRange), browsePrice, cityOrState, browseCityOrState, orAndCityState, category, browseCategory, orAndCategory, sortingMethod, con.stmt);
+				browse.displayHouses(login, Integer.parseInt(lowRange), Integer.parseInt(highRange), browsePrice, cityOrState, browseCityOrState, orAndCityState, category, browseCategory, orAndCategory, sortingMethod, con.stmt);
 			}
 		}
 	}
