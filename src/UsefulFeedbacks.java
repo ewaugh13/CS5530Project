@@ -1,6 +1,4 @@
-
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -8,6 +6,7 @@ public class UsefulFeedbacks {
 	
 	public UsefulFeedbacks(){}
 	
+
 	public void getUsefulFeedbacks(int THID, int numFeedbcks, Statement stmt) throws SQLException, IOException
 	{
 		String query = "Select f.fid, f.feedText, avg(rating) From Feedback f, Rates r Where f.fid = r.fid AND f.THID = " + THID + " group by fid order by avg(rating) desc limit " + numFeedbcks;
@@ -42,5 +41,5 @@ public class UsefulFeedbacks {
 		System.out.println("Here are the fids of the feedback and the text of the selected temporary house and average score of that said feedback.");
 		System.out.println(output);
 	}
-	
+
 }
