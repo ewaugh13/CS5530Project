@@ -19,6 +19,7 @@ public class Favorite
 		String query = " insert into Favorites (THID, login, fvdate)"
 				+ " values (?, ?, ?)";
 		String deleteSQL = "delete from Favorites where login = ?";
+		/*
 	    PreparedStatement preparedDeleteStmt = conn.prepareStatement(deleteSQL);
 	    try
 	    {
@@ -34,6 +35,7 @@ public class Favorite
 		catch(Exception e)
 		{
 		}
+		*/
 		
 		PreparedStatement preparedStmt = conn.prepareStatement(query);
 		setValues(preparedStmt, THID, login); //sets the values and calls execute

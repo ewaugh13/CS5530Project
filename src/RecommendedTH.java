@@ -39,7 +39,7 @@ public class RecommendedTH {
    		 	}
    		}
 		
-		System.out.println("Based on your Reservation, here are some other Temporary Houses you might be interested in.");
+		System.out.println("Based on your Reservation of " + THID + ", here are some other Temporary Houses you might be interested in.");
 		System.out.println(output);
 	}
 

@@ -123,7 +123,7 @@ public class Reserve
    		}
 		if(THIDS.size() > 0)
 		{
-			System.out.println("Here are the THID's of the temporary houses you that you reserved and the names of them:");
+			System.out.println("Here are the THID's of the temporary houses that you reserved and the names of them:");
 			System.out.println(output);
 			System.out.println("Select the THID of the house you want to record a stay at:");
 

@@ -35,7 +35,8 @@ public class testdriver2 {
 		System.out.println("7. Declare a user as trustworthy or not");
 		System.out.println("8. Browse temporary houses by user specification");
 		System.out.println("9. Display usefulness feedbacks based on ratings");
-		System.out.println("10. exit Uotel System");
+		System.out.println("10. View user award info. (Admin Only)");
+		System.out.println("11. exit Uotel System");
 		System.out.println("please enter your choice:");
 	}
 
@@ -197,7 +198,7 @@ public class testdriver2 {
 			{
 				continue;
 			}
-			if (c < 1 | c > 10)
+			if (c < 1 | c > 11)
 				continue;
 			if (c == 1) // reserving a place
 			{
@@ -254,10 +255,88 @@ public class testdriver2 {
 				}
 				usb.getUsefulFeedbacks(THID, c, con.stmt);
 			}
+			else if(c == 10)
+			{
+				UserAwards ua = new UserAwards();
+				boolean isAdmin = ua.AdminChecker(login, con.con, con.stmt);
+				if(isAdmin == true)
+				{
+					userAwardsType(in, con, login, ua);
+				}
+				
+			}
 			else 
 			{
 				System.out.println("Thank you for using Uotel System. \n");
 				con.stmt.close();
+				break;
+			}
+		}
+	}
+	
+	private static void userAwardsType(BufferedReader in, Connector con, String login, UserAwards ua) throws IOException, SQLException, ParseException
+	{
+		String choice;
+		int c = 0;
+		while (true) 
+		{
+			System.out.println("1. View the most trustworthy users");
+			System.out.println("2. View the users with the most useful fedback");
+
+			System.out.println("3. Go back to user options");
+			System.out.println("please enter your choice:");
+			
+			while ((choice = in.readLine()) == null && choice.length() == 0)
+				;
+			try 
+			{
+				c = Integer.parseInt(choice);
+			} 
+			catch (Exception e) 
+			{
+				continue;
+			}
+			
+			if (c < 1 | c > 3)
+				continue;
+			
+			String m;
+			int n;
+			
+			if(c == 1)
+			{
+				System.out.println("How many users would you like to view:");
+				while ((m = in.readLine()) == null && m.length() == 0)
+					;
+				try 
+				{
+					n = Integer.parseInt(m);
+				} 
+				catch (Exception e) 
+				{
+					continue;
+				}
+				
+				ua.mostTrustedUsers(n, con.con, con.stmt);
+			}
+			else if(c == 2)
+			{
+				System.out.println("How many users would you like to view:");
+				while ((m = in.readLine()) == null && m.length() == 0)
+					;
+				try 
+				{
+					n = Integer.parseInt(m);
+				} 
+				catch (Exception e) 
+				{
+					continue;
+				}
+				
+				ua.mostUsefulUsers(n, con.con, con.stmt);
+			}
+			else
+			{
 				break;
 			}
 		}
@@ -393,6 +472,7 @@ public class testdriver2 {
 	private static void reserveTH(BufferedReader in, Connector con, String login) throws IOException, SQLException
 	{
 		List<Map.Entry<Integer, Integer>> dictionaryOfReserveIDs = new ArrayList<Map.Entry<Integer, Integer>>();
+		RecommendedTH recommended = new RecommendedTH();
 		while(true)
 		{
 			Available available = new Available();
@@ -404,13 +484,14 @@ public class testdriver2 {
 				if(pid > 0)
 				{
 					dictionaryOfReserveIDs.add(new AbstractMap.SimpleEntry(THID, pid));
+					recommended.getRecommendedTH(THID, con.stmt);
 				}
 			}
 			
 			String choice;
 			int c;
 
-			System.out.println("1. Reserve another temorary housing.");
+			System.out.println("\n1. Reserve another temorary housing.");
 			System.out.println("2. Confirm reservations and return to previous screen.");
 			System.out.println("please enter your choice (a choice that isn't 1 or 2 will automatically be choice 2): \n");
 				
