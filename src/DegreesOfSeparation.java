@@ -1,14 +1,20 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
 
 public class DegreesOfSeparation {
 	
 	public DegreesOfSeparation(){}
 	
-	public void SeparationGetter(String loginA, String loginB, Connection conn, Statement stmt) throws SQLException, IOException
+	public void separationGetter(String loginA, String loginB, Connection conn, Statement stmt) throws SQLException, IOException
 	{
 		String degree = "";
 		String query = "Select f1.login, f2.login From Favorites f1, Favorites f2 Where f1.login <> f2.login AND f1.login = '" + loginA + "' and "
@@ -89,4 +95,77 @@ public class DegreesOfSeparation {
 		}
 	}
 	
+	public Entry<String, String> displayAllUsersInFavorites(Statement stmt) throws IOException, SQLException
+	{
+		String sql = "Select login From Favorites";
+		List<String> logins = new ArrayList<String>();
+		
+		String output = "";
+		ResultSet rs = null;
+		rs = stmt.executeQuery(sql);
+		try
+		{
+	   		 	rs=stmt.executeQuery(sql);
+	   		 	while (rs.next())
+				{
+	   		 		logins.add(rs.getString("login"));
+	   		 		output += rs.getString("login") + "\n";
+				} 
+	   		 	rs.close();
+   		}
+   		catch(Exception e)
+   		{	
+   		}
+   		finally
+   		{
+   			try
+   			{
+   				if (rs!=null && !rs.isClosed())
+	   		 			rs.close();
+   		 	}
+   		 	catch(Exception e)
+   		 	{
+   		 		System.out.println("cannot close resultset");
+   		 	}
+   		}
+		if(logins.size() > 0)
+		{
+			String choice1 = "";
+			String choice;
+			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+			System.out.println("Here are all the user logins that have favorited a house:");
+			System.out.println(output);
+			System.out.println("Select your first user:");
+		
+			while ((choice = in.readLine()) == null)
+				;
+			if(logins.contains(choice))
+			{
+				choice1 = choice; //returns login
+			}
+			else
+			{
+				System.out.println("Selected user does not exist in options avialable please try again");
+				return new AbstractMap.SimpleEntry<String, String>("", "");
+			}
+			System.out.println("Select your second user:");
+			while ((choice = in.readLine()) == null)
+				;
+			if(choice1.equals(choice))
+			{
+				System.out.println("Please do not select the same user as the previous one");
+			}
+			if(logins.contains(choice))
+			{
+				return new AbstractMap.SimpleEntry<String, String>(choice1, choice); //returns both logins
+			}
+			System.out.println("Selected user does not exist in options avialable please try again");
+			return new AbstractMap.SimpleEntry<String, String>("", "");
+		}
+		else
+		{
+			System.out.println("There are no users who have favorited a house. \n");
+			return new AbstractMap.SimpleEntry<String, String>("", "");
+		}
+	}
 }
