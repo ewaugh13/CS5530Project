@@ -42,11 +42,27 @@ public class testdriver2 {
 
 	public static void displayBrowsingOptions()
 	{
-		System.out.println("1. Browse by range in price");
+		System.out.println("1. Browse by range in price per night(can only check the temporary houses that are available for this one)");
 		System.out.println("2. Browse by city or state");
 		System.out.println("3. Browse by keywords");
 		System.out.println("4. Browse by category");
-		System.out.println("5. Return to previous menu");
+		System.out.println("5. Browse by what has been selected");
+		System.out.println("6. Stop browseing and return to previous menu");
+		System.out.println("please enter your choice (if you select something that you already have no changes will be made to selection):");
+	}
+
+	public static void displayAndOrOptions()
+	{
+		System.out.println("1. Do this and another selection");
+		System.out.println("2. Do this or another selection");
+		System.out.println("please enter your choice (if not 1 or 2 will automatically be 1 and if you are only searching by one it doesn't matter):");
+	}
+	
+	public static void displaySortingOptions()
+	{
+		System.out.println("1. Display in order of cheapest first (will only select temporary houses that are available)");
+		System.out.println("2. Average score of feedbacks (will only select temporary houses that have feedbacks)");
+		System.out.println("3. Average score of trusted user feedbacks (will only select temporary houses that have feedback from users you have declared as trusted)");
 		System.out.println("please enter your choice:");
 	}
 	
@@ -394,7 +410,7 @@ public class testdriver2 {
 				System.out.println("please enter your THName:");
 				while ((THName = in.readLine()) == null && THName.length() == 0)
 					;
-				System.out.println("please enter the yearBuilt:");
+				System.out.println("please enter the yearBuilt(an integer):");
 				while ((yearBuilt = in.readLine()) == null && yearBuilt.length() == 0)
 					;
 				System.out.println("please enter the category:");
@@ -783,6 +799,8 @@ public class testdriver2 {
 	{
 		String choice = "";
 		int c = 0;
+		Map<Integer, String> selectedBrowsing = new HashMap<Integer, String>(); // where string is 'and' or 'or'
+		boolean search = true;
 		while (true) 
 		{
 			displayBrowsingOptions();
@@ -797,36 +815,248 @@ public class testdriver2 {
 			{
 				continue;
 			}
-			if (c < 1 | c > 5)
+			if (c < 1 | c > 6)
 				continue;
+			
+			if(c == 1) // add browse by range in price
+			{
+				if(selectedBrowsing.containsKey(1))
+				{
+					System.out.println("Browsing by range in price per night has already been selected. \n");
+				}
+				else
+				{
+					displayAndOrOptions();
+					while ((choice = in.readLine()) == null && choice.length() == 0)
+						;
+					try 
+					{
+						c = Integer.parseInt(choice);
+					} 
+					catch (Exception e) 
+					{
+						c = 1;
+					}
+					if(c == 2) //is or case
+					{
+						selectedBrowsing.put(1, "or");
+					}
+					else //is and case
+					{
+						selectedBrowsing.put(1, "and");
+					}
+				}
+			}
+			else if(c == 2) // add browse by city or state
+			{
+				if(selectedBrowsing.containsKey(2))
+				{
+					System.out.println("Browsing by city or state has already been selected. \n");
+				}
+				else
+				{
+					displayAndOrOptions();
+					while ((choice = in.readLine()) == null && choice.length() == 0)
+						;
+					try 
+					{
+						c = Integer.parseInt(choice);
+					} 
+					catch (Exception e) 
+					{
+						c = 1;
+					}
+					if(c == 2) //is or case
+					{
+						selectedBrowsing.put(2, "or");
+					}
+					else //is and case
+					{
+						selectedBrowsing.put(2, "and");
+					}
+				}
+			}
+			else if(c == 3) // add browse by keywords
+			{
+				if(selectedBrowsing.containsKey(3))
+				{
+					System.out.println("Browsing by keywords has already been selected. \n");
+				}
+				else
+				{
+					displayAndOrOptions();
+					while ((choice = in.readLine()) == null && choice.length() == 0)
+						;
+					try 
+					{
+						c = Integer.parseInt(choice);
+					} 
+					catch (Exception e) 
+					{
+						c = 1;
+					}
+					if(c == 2) //is or case
+					{
+						selectedBrowsing.put(3, "or");
+					}
+					else //is and case
+					{
+						selectedBrowsing.put(3, "and");
+					}
+				}
+			}
+			else if(c == 4) // add browse by category
+			{
+				if(selectedBrowsing.containsKey(4))
+				{
+					System.out.println("Browsing by category has already been selected. \n");
+				}
+				else
+				{
+					displayAndOrOptions();
+					while ((choice = in.readLine()) == null && choice.length() == 0)
+						;
+					try 
+					{
+						c = Integer.parseInt(choice);
+					} 
+					catch (Exception e) 
+					{
+						c = 1;
+					}
+					if(c == 2) //is or case
+					{
+						selectedBrowsing.put(4, "or");
+					}
+					else //is and case
+					{
+						selectedBrowsing.put(4, "and");
+					}
+				}
+			}
+			
+			else if(c == 5) // run selected things or tells them nothing has been selected
+			{
+				if(selectedBrowsing.size() == 0)
+				{
+					System.out.println("No selected browsing options made. Please make a selection or exit the browsing system. \n");
+				}
+				else
+				{
+					break;
+				}
+			}
+			
+			else if(c == 6)
+			{
+				search = false;
+				break;
+			}
+		}
+		if(search)
+		{
+			boolean browsePrice = false;
+			boolean browseCityOrState = false;
+			boolean browseKeywords = false;
+			boolean browseCategory = false;
+			
+			boolean orAndPrice = true; //true means 'and' where false means 'or'
+			boolean orAndCityState = true; //true means 'and' where false means 'or'
+			boolean orAndCategory = true; //true means 'and' where false means 'or'
+			
+			String lowRange = "";
+			String highRange = "";
+			String cityOrState = "";
+			List<Integer> keywordIDS = new ArrayList<Integer>();
+			String category = "";
 			Browsing browse = new Browsing();
-			if (c == 1) // browse by price range
+			
+			if (selectedBrowsing.containsKey(1)) // browse by price range
 			{
-				
+				System.out.println("please enter a low price for the range(just the number):");
+				while ((lowRange = in.readLine()) == null && lowRange.length() == 0)
+					;
+				System.out.println("please enter a high price for the range(just the number):");
+				while ((highRange = in.readLine()) == null && highRange.length() == 0)
+					;
+				browsePrice = true;
+				if(selectedBrowsing.get(1).equals("or"))
+				{
+					orAndPrice = false;
+				}
 			} 
-			else if (c == 2) // browse by city or state
+			if (selectedBrowsing.containsKey(2)) // browse by city or state
 			{
-				String cityOrState = browse.displayAndSelectCityOrState(con.stmt);
+				cityOrState = browse.displayAndSelectCityOrState(con.stmt);
 				if(!cityOrState.equals(""))
 				{
-					browse.displayHousesByCityOrState(cityOrState, "", con.stmt);
+					browseCityOrState = true;
+					if(selectedBrowsing.get(2).equals("or"))
+					{
+						orAndCityState = false;
+					}
 				}
 			}
-			else if(c == 3) // browse by keywords
+			if(selectedBrowsing.containsKey(3)) // browse by keywords
 			{
-				List<Integer> keywordIDS = browse.displayAndSelectKeywords(con.stmt);
+				keywordIDS = browse.displayAndSelectKeywords(con.stmt);
 				if(keywordIDS.size() > 0)
 				{
-					browse.displayHousesByKeywords(keywordIDS, "", con.stmt);
+					browseKeywords = true;
 				}
 			}
-			else if(c == 4) // browse by category
+			if(selectedBrowsing.containsKey(4)) // browse by category
 			{
-				
+				category = browse.displayAndSelectCategory(con.stmt);
+				if(!category.equals(""))
+				{
+					browseCategory = true;
+					if(selectedBrowsing.get(4).equals("or"))
+					{
+						orAndCategory = false;
+					}
+				}
 			}
-			else 
+			displaySortingOptions();
+			String sortingMethod = "";
+			while(true)
 			{
-				break;
+				while ((choice = in.readLine()) == null && choice.length() == 0)
+					;
+				try 
+				{
+					c = Integer.parseInt(choice);
+				} 
+				catch (Exception e) 
+				{
+					continue;
+				}
+				if(c < 1 || c > 3)  
+				if(c == 1) //sort by price
+				{
+					sortingMethod = "price";
+					break;
+				}
+				else if(c == 2) //sort by avg score of feedbacks
+				{
+					sortingMethod = "feedback";
+					break;
+				}
+				else if(c == 3) //sort by avg trusted user feedbacks
+				{
+					sortingMethod = "trust";
+					break;
+				}
+			}
+			
+			
+			if(browseKeywords)
+			{
+				browse.displayHousesByKeywords(login, keywordIDS, Integer.parseInt(lowRange), Integer.parseInt(highRange), browsePrice, orAndPrice, cityOrState, browseCityOrState, orAndCityState, category, browseCategory, orAndCategory, sortingMethod, con.stmt);
+			}
+			else if(browsePrice || browseCityOrState || browseCategory)
+			{
+				browse.displayHouses(login, Integer.parseInt(lowRange), Integer.parseInt(highRange), browsePrice, cityOrState, browseCityOrState, orAndCityState, category, browseCategory, orAndCategory, sortingMethod, con.stmt);
 			}
 		}
 	}

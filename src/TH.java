@@ -161,14 +161,14 @@ public class TH
 	{
 		try
 		{
-			preparedStmt.setString(1, splitted[0]); // address
-			preparedStmt.setString(2, splitted[1]); //city
-			preparedStmt.setString(3, splitted[2]); //state
-			preparedStmt.setString(4, splitted[3]); //zip
+			preparedStmt.setString(1, splitted[0].toLowerCase()); // address
+			preparedStmt.setString(2, splitted[1].toLowerCase()); //city
+			preparedStmt.setString(3, splitted[2].toLowerCase()); //state
+			preparedStmt.setString(4, splitted[3].toLowerCase()); //zip
 
 			preparedStmt.setString(5, splitted[4]); // th name
 			preparedStmt.setInt(6, Integer.parseInt(splitted[5])); //year built
-			preparedStmt.setString(7, splitted[6]); //category
+			preparedStmt.setString(7, splitted[6].toLowerCase()); //category
 			
 			updateStmt(preparedStmt);
 		}
@@ -184,13 +184,13 @@ public class TH
 		{
 			preparedStmt.setInt(1, THID);
 			preparedStmt.setString(2, URL);
-			preparedStmt.setString(3, splitted[0]); //address
-			preparedStmt.setString(4, splitted[1]); //city
-			preparedStmt.setString(5, splitted[2]); //state
-			preparedStmt.setString(6, splitted[3]); //zip
+			preparedStmt.setString(3, splitted[0].toLowerCase()); //address
+			preparedStmt.setString(4, splitted[1].toLowerCase()); //city
+			preparedStmt.setString(5, splitted[2].toLowerCase()); //state
+			preparedStmt.setString(6, splitted[3].toLowerCase()); //zip
 			preparedStmt.setString(7, splitted[4]); //THname
 			preparedStmt.setInt(8, Integer.parseInt(splitted[5])); //yearBuilt
-			preparedStmt.setString(9, splitted[6]); //category
+			preparedStmt.setString(9, splitted[6].toLowerCase()); //category
 			preparedStmt.setString(10, splitted[7]); //login
 			
 			exectueStmt(preparedStmt, keyIDS, splitted, THID, stmt, conn);
