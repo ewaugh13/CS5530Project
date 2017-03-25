@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.io.*;
 
-public class testdriver2 {
+public class main {
 
 	/**
 	 * @param args
@@ -69,8 +69,6 @@ public class testdriver2 {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Connector con = null;
-		String choice;
-		int c = 0;
 		try 
 		{
 			// remember to replace the password
