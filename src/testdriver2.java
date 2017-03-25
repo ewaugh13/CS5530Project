@@ -35,8 +35,9 @@ public class testdriver2 {
 		System.out.println("7. Declare a user as trustworthy or not");
 		System.out.println("8. Browse temporary houses by user specification");
 		System.out.println("9. Display usefulness feedbacks based on ratings");
-		System.out.println("10. View user award info. (Admin Only)");
-		System.out.println("11. exit Uotel System");
+		System.out.println("10. Check Degrees of Separation for 2 users");
+		System.out.println("11. View user award info. (Admin Only)");
+		System.out.println("12. exit Uotel System");
 		System.out.println("please enter your choice:");
 	}
 
@@ -214,7 +215,7 @@ public class testdriver2 {
 			{
 				continue;
 			}
-			if (c < 1 | c > 11)
+			if (c < 1 | c > 13)
 				continue;
 			if (c == 1) // reserving a place
 			{
@@ -272,6 +273,12 @@ public class testdriver2 {
 				usb.getUsefulFeedbacks(THID, c, con.stmt);
 			}
 			else if(c == 10)
+			{
+				DegreesOfSeparation ds = new DegreesOfSeparation();
+				ds.displayAllUsersInFavorites();
+				ds.SeparationGetter(loginA, loginB, con.con, con.stmt);
+			}
+			else if(c == 11)
 			{
 				UserAwards ua = new UserAwards();
 				boolean isAdmin = ua.AdminChecker(login, con.con, con.stmt);

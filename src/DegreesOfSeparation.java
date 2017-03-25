@@ -8,7 +8,7 @@ public class DegreesOfSeparation {
 	
 	public DegreesOfSeparation(){}
 	
-	public void SeparationGetter(String loginA, String loginB, Connection conn, Statement stmt) throws SQLException, IOException
+	public void separationGetter(String loginA, String loginB, Connection conn, Statement stmt) throws SQLException, IOException
 	{
 		String degree = "";
 		String query = "Select f1.login, f2.login From Favorites f1, Favorites f2 Where f1.login <> f2.login AND f1.login = '" + loginA + "' and "
