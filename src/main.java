@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.io.*;
+import java.util.Map.Entry;
 
 public class main {
 
@@ -35,8 +36,9 @@ public class main {
 		System.out.println("7. Declare a user as trustworthy or not");
 		System.out.println("8. Browse temporary houses by user specification");
 		System.out.println("9. Display usefulness feedbacks based on ratings");
-		System.out.println("10. View user award info. (Admin Only)");
-		System.out.println("11. exit Uotel System");
+		System.out.println("10. Check Degrees of Separation for 2 users");
+		System.out.println("11. View user award info. (Admin Only)");
+		System.out.println("12. exit Uotel System");
 		System.out.println("please enter your choice:");
 	}
 
@@ -212,7 +214,7 @@ public class main {
 			{
 				continue;
 			}
-			if (c < 1 | c > 11)
+			if (c < 1 | c > 13)
 				continue;
 			if (c == 1) // reserving a place
 			{
@@ -270,6 +272,13 @@ public class main {
 				usb.getUsefulFeedbacks(THID, c, con.stmt);
 			}
 			else if(c == 10)
+			{
+				DegreesOfSeparation ds = new DegreesOfSeparation();
+				Entry<String, String> selectedUsers = ds.displayAllUsersInFavorites(con.stmt);
+				ds.separationGetter(selectedUsers.getKey(), selectedUsers.getValue(), con.con, con.stmt);
+
+			}
+			else if(c == 11)
 			{
 				UserAwards ua = new UserAwards();
 				boolean isAdmin = ua.AdminChecker(login, con.con, con.stmt);

@@ -64,6 +64,7 @@ public class DegreesOfSeparation {
 				{
 					degree = rs2.getString("u1.login");
 					
+					
 				}
 				rs2.close();
 			}
