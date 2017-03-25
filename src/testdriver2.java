@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.io.*;
+import java.util.Map.Entry;
 
 public class testdriver2 {
 
@@ -275,8 +276,9 @@ public class testdriver2 {
 			else if(c == 10)
 			{
 				DegreesOfSeparation ds = new DegreesOfSeparation();
-				ds.displayAllUsersInFavorites();
-				ds.SeparationGetter(loginA, loginB, con.con, con.stmt);
+				Entry<String, String> selectedUsers = ds.displayAllUsersInFavorites(con.stmt);
+				ds.separationGetter(selectedUsers.getKey(), selectedUsers.getValue(), con.con, con.stmt);
+
 			}
 			else if(c == 11)
 			{
