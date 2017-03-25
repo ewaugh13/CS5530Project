@@ -9,7 +9,7 @@ import java.util.Map;
 import java.io.*;
 import java.util.Map.Entry;
 
-public class main {
+public class Main {
 
 	/**
 	 * @param args
@@ -69,7 +69,6 @@ public class main {
 	}
 	
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		Connector con = null;
 		try 
 		{
