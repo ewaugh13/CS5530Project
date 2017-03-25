@@ -9,7 +9,7 @@ import java.util.Map;
 import java.io.*;
 import java.util.Map.Entry;
 
-public class testdriver2 {
+public class main {
 
 	/**
 	 * @param args
