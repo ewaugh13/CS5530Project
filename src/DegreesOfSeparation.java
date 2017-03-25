@@ -26,7 +26,9 @@ public class DegreesOfSeparation {
 			rs = stmt.executeQuery(query);
 			while (rs.next())
 			{
-				degree = rs.getString("u1.login");
+				degree = rs.getString("f1.login");
+				//System.out.println("bb");
+
 				
 			}
 			rs.close();
@@ -62,8 +64,8 @@ public class DegreesOfSeparation {
 				rs2 = stmt.executeQuery(query2);
 				while (rs2.next())
 				{
-					degree = rs2.getString("u1.login");
-					
+					degree = rs2.getString("f3.login");
+					System.out.println(degree);
 					
 				}
 				rs2.close();

@@ -9,7 +9,7 @@ import java.util.Map;
 import java.io.*;
 import java.util.Map.Entry;
 
-public class main {
+public class Main {
 
 	/**
 	 * @param args
