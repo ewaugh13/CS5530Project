@@ -286,7 +286,6 @@ public class testdriver2 {
 				{
 					userAwardsType(in, con, login, ua);
 				}
-				
 			}
 			else 
 			{
