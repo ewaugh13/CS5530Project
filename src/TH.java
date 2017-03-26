@@ -109,6 +109,14 @@ public class TH
 			{
 				System.out.println("Select the THID of the house you want to view the average feedback rates score");
 			}
+			else if(operation.equals("remove"))
+			{
+				System.out.println("Select the THID of the house you want to view the remove a period");
+			}
+			else if(operation.equals("keyword"))
+			{
+				System.out.println("Select the THID of the house you want to add or remove keywords");
+			}
 		
 			String choice;
 			int c = 0;
@@ -223,7 +231,7 @@ public class TH
 			{
 				if(keyIDS.get(i) > 0)
 				{
-					key.insertIntoHasKeys(THID, keyIDS.get(i), conn, stmt);
+					key.insertIntoHasKeys(THID, keyIDS.get(i), conn);
 				}
 			}
 		}

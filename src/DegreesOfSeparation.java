@@ -100,7 +100,7 @@ public class DegreesOfSeparation {
 	
 	public Entry<String, String> displayAllUsersInFavorites(Statement stmt) throws IOException, SQLException
 	{
-		String sql = "Select login From Favorites";
+		String sql = "Select login From Favorites group by login";
 		List<String> logins = new ArrayList<String>();
 		
 		String output = "";

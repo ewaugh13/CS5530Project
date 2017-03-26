@@ -37,8 +37,21 @@ public class Main {
 		System.out.println("8. Browse temporary houses by user specification");
 		System.out.println("9. Display usefulness feedbacks based on ratings");
 		System.out.println("10. Check Degrees of Separation for 2 users");
-		System.out.println("11. View user award info. (Admin Only)");
-		System.out.println("12. exit Uotel System");
+		System.out.println("11. View statistics");
+		System.out.println("12. View user award info (Admin Only)");
+		System.out.println("13. exit Uotel System");
+		System.out.println("please enter your choice:");
+	}
+	
+	public static void displayTHOptions()
+	{
+		System.out.println("1. Create a temporary housing");
+		System.out.println("2. Update a temporary housing");
+		System.out.println("3. Create time available for your temporary housing");
+		System.out.println("4. Remove time available for your temporary housing (if not already reserved)");
+		System.out.println("5. Add or remove keywords");
+		System.out.println("6. View your listed temporary houses");
+		System.out.println("7. Go back to user options");
 		System.out.println("please enter your choice:");
 	}
 
@@ -65,6 +78,14 @@ public class Main {
 		System.out.println("1. Display in order of cheapest first (will only select temporary houses that are available)");
 		System.out.println("2. Average score of feedbacks (will only select temporary houses that have feedbacks)");
 		System.out.println("3. Average score of trusted user feedbacks (will only select temporary houses that have feedback from users you have declared as trusted)");
+		System.out.println("please enter your choice:");
+	}
+	
+	public static void displayStatsOptions()
+	{
+		System.out.println("1. The most popular temporary houses for each category based on visits");
+		System.out.println("2. The avg cost of visits for temporary houses for each category");
+		System.out.println("3. The most highly rated temporary hosues for each category based on user feedback");
 		System.out.println("please enter your choice:");
 	}
 	
@@ -247,11 +268,11 @@ public class Main {
 			{
 				declareTrustworthy(in, con, login);
 			}
-			else if(c == 8)
+			else if(c == 8) //browsing
 			{
 				browsing(in, con, login);
 			}
-			else if(c == 9)
+			else if(c == 9) // usefull feedbacks
 			{
 				UsefulFeedbacks usb = new UsefulFeedbacks();
 				TH th = new TH();
@@ -270,14 +291,77 @@ public class Main {
 				}
 				usb.getUsefulFeedbacks(THID, c, con.stmt);
 			}
-			else if(c == 10)
+			else if(c == 10) // degrees of seperation
 			{
 				DegreesOfSeparation ds = new DegreesOfSeparation();
 				Entry<String, String> selectedUsers = ds.displayAllUsersInFavorites(con.stmt);
 				ds.separationGetter(selectedUsers.getKey(), selectedUsers.getValue(), con.con, con.stmt);
-
 			}
 			else if(c == 11)
+			{
+				Statistics stats = new Statistics();
+				String option = "";
+				while(true)
+				{
+					displayStatsOptions();
+					while ((choice = in.readLine()) == null && choice.length() == 0)
+						;
+					try 
+					{
+						c = Integer.parseInt(choice);
+					} 
+					catch (Exception e) 
+					{
+						continue;
+					}
+					if(c < 1 || c > 3)
+						continue;
+					
+					if(c == 1)
+					{
+						option = "popular";
+						break;
+					}
+					else if(c == 2)
+					{
+						option = "cost";
+						break;
+					}
+					else if(c == 3)
+					{
+						option = "score";
+						break;
+					}
+				}
+				
+				System.out.println("Select the amount of houses for each category you want to show (if wrong input it will be set to 5):");
+				while ((choice = in.readLine()) == null && choice.length() == 0)
+					;
+				try 
+				{
+					c = Integer.parseInt(choice);
+				} 
+				catch (Exception e) 
+				{
+					c = 5;
+				}
+				if(option.equals("popular"))
+				{
+					List<String> categories = stats.getAllCategoriesInVisit(con.stmt);
+					stats.statForMostVisited(categories, con.stmt, c);
+				}
+				else if(option.equals("cost"))
+				{
+					List<String> categories = stats.getAllCategoriesInVisit(con.stmt);
+					stats.statMostExpensive(categories, con.stmt, c);
+				}
+				else if(option.equalsIgnoreCase("score"))
+				{
+					List<String> categories = stats.getAllCategoriesInFeedback(con.stmt);
+					stats.statMostPopular(categories, con.stmt, c);
+				}
+			}
+			else if(c == 12) // user awards
 			{
 				UserAwards ua = new UserAwards();
 				boolean isAdmin = ua.AdminChecker(login, con.con, con.stmt);
@@ -369,12 +453,7 @@ public class Main {
 		int c = 0;
 		while (true) 
 		{
-			System.out.println("1. Create a temporary housing");
-			System.out.println("2. Update a temporary housing");
-			System.out.println("3. Create time available for your temporary housing");
-			System.out.println("4. View your listed temporary houses");
-			System.out.println("5. Go back to user options");
-			System.out.println("please enter your choice:");
+			displayTHOptions();
 			
 			while ((choice = in.readLine()) == null && choice.length() == 0)
 				;
@@ -386,7 +465,7 @@ public class Main {
 			{
 				continue;
 			}
-			if (c < 1 | c > 5)
+			if (c < 1 | c > 7)
 				continue;		
 		
 			String address; 
@@ -457,7 +536,7 @@ public class Main {
 					Thdata.updateTH(con.con, input, THID);
 				}
 			}
-			else if(c == 3)
+			else if(c == 3) // create new available
 			{
 				Available available = new Available();
 				String pricePerNight = "";
@@ -478,7 +557,51 @@ public class Main {
 					}
 				}	
 			}
-			else if(c == 4)
+			else if(c == 4) // remove time of available
+			{
+				TH th = new TH();
+				int THID = th.selectTH(con.stmt, login, "remove");
+				
+				Available available = new Available();
+				int pid = available.displayAndSelectPidAvialable(THID, "remove", con.stmt);
+				available.removeAvailabe(THID, pid, con.con);
+			}
+			else if(c == 5) // remove or add keywords
+			{
+				TH th = new TH();
+				int THID = th.selectTH(con.stmt, login, "keyword");
+				Keyword key = new Keyword();
+				
+				System.out.println("Select 1 to add more keywords for a selected TH and 2 to remove them (if not 1 or 2 will just return to temporary house menu");
+				while ((choice = in.readLine()) == null && choice.length() == 0)
+					;
+				try 
+				{
+					c = Integer.parseInt(choice);
+				} 
+				catch (Exception e) 
+				{
+					c = 3;
+				}
+				if(c == 1) // add more keywords
+				{
+					List<Integer> keyIDS = key.userInput(con.con, con.stmt);
+					for(int i = 0; i < keyIDS.size(); i++)
+					{
+						key.insertIntoHasKeys(THID, keyIDS.get(i), con.con);
+					}
+					System.out.println("keywords added");
+				}
+				else if(c == 2) // remove keywords
+				{
+					List<Integer> keyIDS = key.userInputRemove(THID, con.con, con.stmt);
+					for(int i = 0; i < keyIDS.size(); i++)
+					{
+						key.removeFromHasKeys(THID, keyIDS.get(i), con.con);
+					}
+				}
+			}
+			else if(c == 6) // display all users TH
 			{
 				TH th = new TH();
 				th.displayUsersTH(con.stmt, login);
@@ -501,7 +624,7 @@ public class Main {
 			int THID = available.displayAndSelectTHAvialable(con.stmt);
 			if(THID > 0)
 			{
-				int pid = available.displayAndSelectPidAvialable(THID, con.stmt);
+				int pid = available.displayAndSelectPidAvialable(THID, "reserve", con.stmt);
 				if(pid > 0)
 				{
 					dictionaryOfReserveIDs.add(new AbstractMap.SimpleEntry(THID, pid));

@@ -154,10 +154,9 @@ public class Keyword
 	public List<Integer> userInput(Connection conn, Statement stmt) throws IOException, NumberFormatException, SQLException, ParseException
 	{
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		int keyWordCounter = 0;
-		System.out.println("You may insert up to 5 keywords about your temporary housing. \n");
+		System.out.println("You may insert keywords about your temporary housing. \n");
 		List<Integer> keyIDS =  new ArrayList<Integer>();
-		while(keyWordCounter < 5)
+		while(true)
 		{
 			System.out.println("1. Insert new keyword");
 			System.out.println("2. Finish adding keywords");
@@ -194,12 +193,84 @@ public class Keyword
 			{
 				break;
 			}
-			keyWordCounter++;
+		}
+		return keyIDS;
+	}
+	
+	public List<Integer> userInputRemove(int THID, Connection conn, Statement stmt) throws IOException, NumberFormatException, SQLException, ParseException
+	{
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		System.out.println("You may remove keywords about your temporary housing. \n");
+		
+		String query = "Select k.wid, k.word From Keywords k, HasKeywords h Where h.wid = k.wid and h.THID = " + THID;
+		String output = "";
+		ResultSet rs=null;
+		try
+		{
+	   		 	rs=stmt.executeQuery(query);
+	   		 	while (rs.next())
+				{
+	   		 		output += rs.getString("wid") + ", " + rs.getString("word") + "\n";
+				} 
+	   		 	rs.close();
+   		}
+   		catch(Exception e)
+   		{
+   		}
+   		finally
+   		{
+   			try
+   			{
+   				if (rs!=null && !rs.isClosed())
+	   		 			rs.close();
+   		 	}
+   		 	catch(Exception e)
+   		 	{
+   		 		System.out.println("cannot close resultset");
+   		 	}
+   		}
+		System.out.println("Here are the keywords by wid and the word for your house that you selected");
+		System.out.println(output);
+		
+		List<Integer> keyIDS =  new ArrayList<Integer>();
+		while(true)
+		{
+			System.out.println("1. Remove keyword");
+			System.out.println("2. Finish removing keywords");
+			System.out.println("please make a selection(if not 1 or 2 will automatically be 2):");
+			
+			String choice = "";
+			int c = 0;
+			
+			while ((choice = in.readLine()) == null && choice.length() == 0)
+				;
+			try 
+			{
+				c = Integer.parseInt(choice);
+			} 
+			catch (Exception e) 
+			{
+				c = 2;
+			}
+			
+			if(c == 1)
+			{
+				String wid;
+				
+				System.out.println("please enter a wid to remove that keyword:");
+				while ((wid = in.readLine()) == null && wid.length() == 0)
+					;
+				keyIDS.add(Integer.parseInt(wid));
+			}
+			else
+			{
+				break;
+			}
 		}
 		return keyIDS;
 	}
 
-	public void insertIntoHasKeys(int THID, int wid, Connection conn, Statement stmt) throws SQLException
+	public void insertIntoHasKeys(int THID, int wid, Connection conn) throws SQLException
 	{
 		String query = " insert into HasKeywords (THID, wid)"
 				+ " values (?, ?)";
@@ -211,6 +282,28 @@ public class Keyword
 		}
 		catch(Exception e)
 		{
+		}
+		try
+		{
+			preparedStmt.execute();
+		}
+		catch(Exception e)
+		{
+		}
+	}
+	
+	public void removeFromHasKeys(int THID, int wid, Connection conn) throws SQLException
+	{
+		String query = " delete from HasKeywords Where THID = ? AND wid = ?";
+		PreparedStatement preparedStmt = conn.prepareStatement(query);
+		try
+		{
+			preparedStmt.setInt(1, THID);
+			preparedStmt.setInt(2, wid);
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
 		}
 		try
 		{

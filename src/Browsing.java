@@ -119,7 +119,7 @@ public class Browsing
 		List<Integer> selectedWIDS = new ArrayList<Integer>();
 		if(Keywords.size() > 0)
 		{
-			System.out.println("You can select up to 5 keywords. \n");
+			System.out.println("You can select up to 20 keywords. \n");
 			
 			System.out.println("Here are all the keywords that we have listed:");
 			for(int i = 0; i < Keywords.size(); i++)
@@ -130,7 +130,7 @@ public class Browsing
 			int count = 0;
 			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 			
-			while(count < 5)
+			while(count < 20)
 			{	
 				System.out.println("\n1. Add a keyword to browse by.");
 				System.out.println("2. Done selecting keywords for browsing.");

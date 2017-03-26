@@ -129,7 +129,7 @@ public class Available
 		}
 	}
 
-	public int displayAndSelectPidAvialable(int THID, Statement stmt) throws IOException
+	public int displayAndSelectPidAvialable(int THID, String operation, Statement stmt) throws IOException
 	{
 		String query = "Select p.pid, p.fromDate, p.toDate, a.pricePerNight From Available a, Period p Where a.THID = " + THID + " AND a.pid = p.pid";
 		String output = "";
@@ -165,7 +165,14 @@ public class Available
 		{
 			System.out.println("Here are the pid's of the dates that the house you are looking at are available and the cost per night:");
 			System.out.println(output);
-			System.out.println("Select the pid of the time you want to reserve the temporary house:");
+			if(operation.equals("reserve"))
+			{
+				System.out.println("Select the pid of the time you want to reserve the temporary house:");
+			}
+			else if(operation.equals("remove"))
+			{
+				System.out.println("Select the pid of the time you want to remove the temporary house:");
+			}
 
 		
 			String choice;
@@ -246,6 +253,7 @@ public class Available
 	    try
 	    {
 	    	preparedDeleteStmt.execute();
+	    	System.out.println("Time with pid of " + pid + " and THID " + THID + " removed");
 	    }
 		
 		catch(Exception e)
