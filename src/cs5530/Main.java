@@ -253,9 +253,36 @@ public class Main {
 			{
 				Favorite favorite = new Favorite();
 				TH th = new TH();
-				int selectionID = th.selectAllTH(con.stmt);
+				StringBuilder stringBuilder = new StringBuilder();
+				List<Integer> THIDS = th.selectAllTH(con.stmt, stringBuilder);
+				if(THIDS.size() > 0)
+				{
+					choice = "";
+					c = 0;
 				
-				favorite.updateFavorite(login, selectionID, con.con, con.stmt);
+					while ((choice = in.readLine()) == null)
+						;
+					try 
+					{
+						c = Integer.parseInt(choice);
+					} 
+					catch (Exception e) 
+					{
+					}
+					if(THIDS.contains(c))
+					{
+						System.out.println("House favorited with the THID of " + c);
+						favorite.updateFavorite(login, c, con.con, con.stmt);
+					}
+					else
+					{
+						System.out.println("Select a correct temporary house by THID");
+					}
+				}
+				else
+				{
+					System.out.println("There are no temporary houses listed. \n");
+				}
 			}
 			else if(c == 5) // give feedback
 			{

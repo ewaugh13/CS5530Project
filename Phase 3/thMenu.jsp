@@ -5,41 +5,49 @@
 
 
 
-function reserveMenu()
+function insertTHMenu()
 {
-	window.location = "reserve.jsp";
+	window.location = "insertTH.jsp";
 }	
 
-function button2()
+function updateTHMenu()
 {
-	window.location = "thMenu.jsp";
+	window.location = "updateTH.jsp";
 }
 
-function visitMenu()
+function periodMenu()
 {
-	window.location = "visit.jsp";
+	window.location = "period.jsp";
 }
 
 </script> 
 </head>
 <body>
-	<%
-	HttpSession sess = request.getSession();
-	String login = sess.getAttribute("login").toString();
-	sess.setAttribute("THID", 0);
-	%>
-	Logged in as the user
-	<% out.println(login); %> 
 	<BR><BR>
 	Select an option:
-	<FORM NAME="Reserve_button" METHOD="POST" ONCLICK="reserveMenu()" action="reserve.jsp">
-        <INPUT TYPE="HIDDEN" NAME="ReserveButton">
-        <INPUT TYPE="BUTTON" VALUE="Reserve a temporary house" >
+	<FORM NAME="InsertTH_button" METHOD="POST" ONCLICK="insertTHMenu()" action="insertTH.jsp">
+        <INPUT TYPE="HIDDEN" NAME="insertTHButton">
+        <INPUT TYPE="BUTTON" VALUE="List a temporary house" >
     </FORM>
 	<BR>
-	<FORM NAME="TemporaryHouse_button" METHOD="POST" ONCLICK="button2()" action="thMenu.jsp">
-        <INPUT TYPE="HIDDEN" NAME="temporaryHouseButton">
-        <INPUT TYPE="BUTTON" VALUE="Create or update temporary house">
+	<FORM NAME="UpdateTH_button" METHOD="POST" ONCLICK="updateTHMenu()" action="updateTH.jsp">
+        <INPUT TYPE="HIDDEN" NAME="updateTHButton">
+        <INPUT TYPE="BUTTON" VALUE="Update a temporary house you own">
+    </FORM>
+    <BR>
+	<FORM NAME="Period_button" METHOD="POST" ONCLICK="periodMenu()" action="period.jsp">
+        <INPUT TYPE="HIDDEN" NAME="PeriodButton">
+        <INPUT TYPE="BUTTON" VALUE="Create a period of availability">
+    </FORM>
+    <BR>
+	<FORM NAME="Visit_button" METHOD="POST" ONCLICK="visitMenu()" action="visit.jsp">
+        <INPUT TYPE="HIDDEN" NAME="VisitButton">
+        <INPUT TYPE="BUTTON" VALUE="Record a visit at a temporary house">
+    </FORM>
+    <BR>
+	<FORM NAME="Visit_button" METHOD="POST" ONCLICK="visitMenu()" action="visit.jsp">
+        <INPUT TYPE="HIDDEN" NAME="VisitButton">
+        <INPUT TYPE="BUTTON" VALUE="Record a visit at a temporary house">
     </FORM>
     <BR>
 	<FORM NAME="Visit_button" METHOD="POST" ONCLICK="visitMenu()" action="visit.jsp">

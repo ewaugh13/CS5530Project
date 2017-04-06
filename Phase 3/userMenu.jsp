@@ -10,7 +10,7 @@ function reserveMenu()
 	window.location = "reserve.jsp";
 }	
 
-function button2()
+function thMenu()
 {
 	window.location = "thMenu.jsp";
 }
@@ -18,6 +18,11 @@ function button2()
 function visitMenu()
 {
 	window.location = "visit.jsp";
+}
+
+function favoritesMenu()
+{
+	window.location = "favoritesMenu.jsp";
 }
 
 </script> 
@@ -37,7 +42,7 @@ function visitMenu()
         <INPUT TYPE="BUTTON" VALUE="Reserve a temporary house" >
     </FORM>
 	<BR>
-	<FORM NAME="TemporaryHouse_button" METHOD="POST" ONCLICK="button2()" action="thMenu.jsp">
+	<FORM NAME="TemporaryHouse_button" METHOD="POST" ONCLICK="thMenu()" action="thMenu.jsp">
         <INPUT TYPE="HIDDEN" NAME="temporaryHouseButton">
         <INPUT TYPE="BUTTON" VALUE="Create or update temporary house">
     </FORM>
@@ -45,5 +50,10 @@ function visitMenu()
 	<FORM NAME="Visit_button" METHOD="POST" ONCLICK="visitMenu()" action="visit.jsp">
         <INPUT TYPE="HIDDEN" NAME="VisitButton">
         <INPUT TYPE="BUTTON" VALUE="Record a visit at a temporary house">
+    </FORM>
+    <BR>
+	<FORM NAME="Favorites_button" METHOD="POST" ONCLICK="favoritesMenu()" action="favoritesMenu.jsp">
+        <INPUT TYPE="HIDDEN" NAME="FavoritesButton">
+        <INPUT TYPE="BUTTON" VALUE="Record your favorite place to stay">
     </FORM>
 </body>

@@ -263,7 +263,7 @@ public class TH
 		}
 	}
 
-	public int selectAllTH(Statement stmt) throws SQLException, IOException
+	public List<Integer> selectAllTH(Statement stmt, StringBuilder stringBuilder) throws SQLException, IOException
 	{
 		String sql = "Select THID, THname From THData";
 		List<Integer> THIDS = new ArrayList<Integer>();
@@ -296,39 +296,10 @@ public class TH
    		 		System.out.println("cannot close resultset");
    		 	}
    		}
-		if(THIDS.size() > 0)
-		{
-			System.out.println("Here are the THID's and names of the temporary houses:");
-			System.out.println(output);
-			System.out.println("Select the THID:");
-		
-			String choice;
-			int c = 0;
-			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		
-			while ((choice = in.readLine()) == null)
-				;
-			try 
-			{
-				c = Integer.parseInt(choice);
-			} 
-			catch (Exception e) 
-			{
-			}
-			if(THIDS.contains(c))
-			{
-				return c; //returns THID
-			}
-			else
-			{
-				return 0;
-			}
-		}
-		else
-		{
-			System.out.println("There are no temporary houses listed. \n");
-			return 0;
-		}
+		stringBuilder.append("Here are the THID's and names of the temporary houses: \n");
+		stringBuilder.append(output);
+		stringBuilder.append("Select the THID: \n");
+		return THIDS;
 	}
 
 	public void displayUsersTH(Statement stmt, String login) throws SQLException
