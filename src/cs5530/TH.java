@@ -13,7 +13,7 @@ public class TH
 {
 	public TH() {}
 	
-	public void insertTH(String input, Connection conn, Statement stmt) throws SQLException, IOException, NumberFormatException, ParseException
+	public int insertTH(String input, Connection conn, Statement stmt) throws SQLException, IOException, NumberFormatException, ParseException
 	{
 		Keyword key = new Keyword();
 		List<Integer> keyIDS = key.userInput(conn, stmt);

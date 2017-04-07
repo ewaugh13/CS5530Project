@@ -88,7 +88,7 @@ public class Trust {
 		}
 	}
 	
-	public String displayAndSelectUser(String login, Statement stmt, Connection conn) throws IOException
+	public String displayAndSelectUser(String login, Statement stmt) throws IOException
 	{
 		String query = "Select u.login, u.fullName From Users u Where u.login <> '" + login + "'";
 		String output = "";
@@ -147,5 +147,43 @@ public class Trust {
 			System.out.println("There are no other users. Tell your friends about us. \n");
 			return "";
 		}
+	}
+
+	public List<String> displayAndUsers(String login, Statement stmt, StringBuilder stringbuilder) throws IOException
+	{
+		String query = "Select u.login, u.fullName From Users u Where u.login <> '" + login + "'";
+		String output = "";
+		List<String> Logins = new ArrayList<String>();
+		ResultSet rs=null;
+		try
+		{
+	   		 	rs=stmt.executeQuery(query);
+	   		 	while (rs.next())
+				{
+	   		 		Logins.add(rs.getString("login"));
+	   		 		output += rs.getString("login") + ", " + rs.getString("fullName") + "\n"; 
+				} 
+	   		 	rs.close();
+   		}
+   		catch(Exception e)
+   		{
+   			
+   		}
+   		finally
+   		{
+   			try
+   			{
+   				if (rs!=null && !rs.isClosed())
+	   		 			rs.close();
+   		 	}
+   		 	catch(Exception e)
+   		 	{
+   		 		System.out.println("cannot close resultset");
+   		 	}
+   		}
+		stringbuilder.append("Here are the logins and full names of all the other users in the system. \n");
+		stringbuilder.append(output);
+		stringbuilder.append("Select the login of the user that you want to make trustworthy or not: \n");
+		return Logins;
 	}
 }

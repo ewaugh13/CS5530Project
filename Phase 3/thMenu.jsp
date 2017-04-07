@@ -20,6 +20,26 @@ function periodMenu()
 	window.location = "period.jsp";
 }
 
+function removePeriodMenu()
+{
+	window.location = "removePeriod.jsp";
+}
+
+function updateKeyWordsMenu()
+{
+	window.location = "updateKeyWords.jsp";	
+}
+
+function viewHousesMenu()
+{
+	window.location = "viewHouses.jsp";
+}
+
+function returnToUserMenu()
+{
+	window.location = "userMenu.jsp";
+}
+
 </script> 
 </head>
 <body>
@@ -40,18 +60,23 @@ function periodMenu()
         <INPUT TYPE="BUTTON" VALUE="Create a period of availability">
     </FORM>
     <BR>
-	<FORM NAME="Visit_button" METHOD="POST" ONCLICK="visitMenu()" action="visit.jsp">
-        <INPUT TYPE="HIDDEN" NAME="VisitButton">
-        <INPUT TYPE="BUTTON" VALUE="Record a visit at a temporary house">
+	<FORM NAME="RemovePeriod_button" METHOD="POST" ONCLICK="removePeriodMenu()" action="removePeriod.jsp">
+        <INPUT TYPE="HIDDEN" NAME="RemovePeriodButton">
+        <INPUT TYPE="BUTTON" VALUE="Remove a period of availability">
     </FORM>
     <BR>
-	<FORM NAME="Visit_button" METHOD="POST" ONCLICK="visitMenu()" action="visit.jsp">
-        <INPUT TYPE="HIDDEN" NAME="VisitButton">
-        <INPUT TYPE="BUTTON" VALUE="Record a visit at a temporary house">
+	<FORM NAME="UpdateKeyWords_button" METHOD="POST" ONCLICK="updateKeyWordsMenu()" action="updateKeyWords.jsp">
+        <INPUT TYPE="HIDDEN" NAME="UpdateKeyWordsButton">
+        <INPUT TYPE="BUTTON" VALUE="Update the keywords of a house you have listed">
     </FORM>
     <BR>
-	<FORM NAME="Visit_button" METHOD="POST" ONCLICK="visitMenu()" action="visit.jsp">
-        <INPUT TYPE="HIDDEN" NAME="VisitButton">
-        <INPUT TYPE="BUTTON" VALUE="Record a visit at a temporary house">
+	<FORM NAME="ViewHouses_button" METHOD="POST" ONCLICK="viewHousesMenu()" action="viewHouses.jsp">
+        <INPUT TYPE="HIDDEN" NAME="ViewHousesButton">
+        <INPUT TYPE="BUTTON" VALUE="View the houses that you have listed">
     </FORM>
+    <BR>
+    <FORM NAME="Return_button" METHOD="POST" ONCLICK="returnToUserMenu()" action="userMenu.jsp">
+    <INPUT TYPE="HIDDEN" NAME="ReturnButton">
+  	<INPUT TYPE="BUTTON" VALUE="Go back to User Menu" >
+  	</FORM>
 </body>

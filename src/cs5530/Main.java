@@ -833,6 +833,7 @@ public class Main {
 		if(assessC == 1)
 		{
 			TH th = new TH();
+			
 			int selectionID = th.selectAllTH(con.stmt);
 			
 			Feedback feedback = new Feedback();

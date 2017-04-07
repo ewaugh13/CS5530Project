@@ -22,7 +22,7 @@ function visitMenu()
 
 function favoritesMenu()
 {
-	window.location = "favoritesMenu.jsp";
+	window.location = "favorites.jsp";
 }
 
 </script> 
@@ -52,7 +52,7 @@ function favoritesMenu()
         <INPUT TYPE="BUTTON" VALUE="Record a visit at a temporary house">
     </FORM>
     <BR>
-	<FORM NAME="Favorites_button" METHOD="POST" ONCLICK="favoritesMenu()" action="favoritesMenu.jsp">
+	<FORM NAME="Favorites_button" METHOD="POST" ONCLICK="favoritesMenu()" action="favorites.jsp">
         <INPUT TYPE="HIDDEN" NAME="FavoritesButton">
         <INPUT TYPE="BUTTON" VALUE="Record your favorite place to stay">
     </FORM>
